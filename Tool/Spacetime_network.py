@@ -66,7 +66,7 @@ class Network:
             _polygon = self.canvas.create_polygon(self.Community_Coordinate[i][0],outline='red',width=2) #fill='#d47284'
             
             if i == 1:
-                self.n1 = n1*3
+                self.n1 = n1
                 self.l1 = l1
                 self.p1 = p1
                 
