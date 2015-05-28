@@ -1,3 +1,9 @@
+'''
+Created on March 17, 2015
+
+@author: sagar jha
+'''
+
 def CommunityCoordinates_Generator(Communities,w,h):
         
         Width  = w - 250

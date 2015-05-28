@@ -1,3 +1,9 @@
+'''
+Created on March 17, 2015
+
+@author: sagar jha
+'''
+
 from Tkinter import *
 import Tkinter as tk
 import random as rd

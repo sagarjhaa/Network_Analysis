@@ -1,3 +1,9 @@
+'''
+Created on March 17, 2015
+
+@author: sagar jha
+'''
+
 from nodebox.graphics import *
 from nodebox.graphics.physics import Node, Edge, Graph
 
