@@ -99,7 +99,11 @@ class Network:
                 self.__drawElements(self.s2,self.n2,self.p2,i)
 
             if i ==3:
-                self.s3 = copy.deepcopy(self.s1)
+                #self.s3 = copy.deepcopy(self.s1)
+
+                self.s3 = Simulator(self.n1)
+                self.s3.genPoints_GenRndGnm(self.Community_Coordinate[i])
+
                 self.n3 = copy.deepcopy(self.n1)#n3
                 self.l3 = copy.deepcopy(self.l1)#l3
                 self.p3 = copy.deepcopy(self.p1)#p3
@@ -112,7 +116,10 @@ class Network:
 
                     
             if i ==4:
-                self.s4 = copy.deepcopy(self.s1)
+                #self.s4 = copy.deepcopy(self.s1)
+                self.s4 = Simulator(self.n1)
+                self.s4.genPoints_GenForestFire(self.Community_Coordinate[i])
+                
                 self.n4 = copy.deepcopy(self.n1)#n4
                 self.l4 = copy.deepcopy(self.l1)#l4
                 self.p4 = copy.deepcopy(self.p1)#p4
@@ -137,17 +144,21 @@ class Network:
         
         if i == 2:
             for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].color = self.s1.pAll[jNode].color
                 self.s.pAll[jNode].x = self.s1.pAll[jNode].x +  hwidth + 10
                 self.s.pAll[jNode].y = self.s1.pAll[jNode].y 
 
         if i == 3:
             for jNode in range(len(self.s.pAll)):
-                self.s.pAll[jNode].y = self.s.pAll[jNode].y +  hheight + 10
+                self.s.pAll[jNode].color = self.s1.pAll[jNode].color
+                self.s.pAll[jNode].x = self.s1.pAll[jNode].x
+                self.s.pAll[jNode].y = self.s1.pAll[jNode].y +  hheight + 10
 
         if i ==4 :
             for jNode in range(len(self.s.pAll)):
-                self.s.pAll[jNode].x = self.s.pAll[jNode].x +  hwidth + 10
-                self.s.pAll[jNode].y = self.s.pAll[jNode].y +  hheight + 10
+                self.s.pAll[jNode].color = self.s1.pAll[jNode].color
+                self.s.pAll[jNode].x = self.s1.pAll[jNode].x +  hwidth + 10
+                self.s.pAll[jNode].y = self.s1.pAll[jNode].y +  hheight + 10
             
                 
 
@@ -164,43 +175,43 @@ class Network:
             if lenFollower == 0:
                 lenFollower = 1
             
-            if (100*lenFollower)/self.n >= self.p:
-                _oval = self.canvas.create_oval(self.s.pAll[jNode].x,
-                                                self.s.pAll[jNode].y,
-                                                self.s.pAll[jNode].x + (self.Radius + (50 * lenFollower)/self.n),
-                                                self.s.pAll[jNode].y + (self.Radius + (50 * lenFollower)/self.n),
-                                                outline=self.s.pAll[jNode].color,
-                                                fill="",
-                                                width=2,
-                                                activefill="green") #Point_List1[jNode].color
-                Widget_to_Node[_oval]= jNode
-                self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
+            #if (100*lenFollower)/self.n >= self.p:
+            _oval = self.canvas.create_oval(self.s.pAll[jNode].x,
+                                            self.s.pAll[jNode].y,
+                                            self.s.pAll[jNode].x + (self.Radius + (50 * lenFollower)/self.n),
+                                            self.s.pAll[jNode].y + (self.Radius + (50 * lenFollower)/self.n),
+                                            outline=self.s.pAll[jNode].color,
+                                            fill="",
+                                            width=2,
+                                            activefill="green") #Point_List1[jNode].color
+            Widget_to_Node[_oval]= jNode
+            self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
                 
                 #print "T1: ",jNode
                 #print "Follower: ",self.s.pAll[jNode].follower
-            else:
-                _oval = self.canvas.create_oval(self.s.pAll[jNode].x,
-                                                self.s.pAll[jNode].y,
-                                                self.s.pAll[jNode].x + (self.Radius),
-                                                self.s.pAll[jNode].y + (self.Radius),
-                                                outline="black",width=2,
-                                                activefill="green",
-                                                fill="")#Point_List[jNode].color
-                Widget_to_Node[_oval]= jNode
-                self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
+##            else:
+##                _oval = self.canvas.create_oval(self.s.pAll[jNode].x,
+##                                                self.s.pAll[jNode].y,
+##                                                self.s.pAll[jNode].x + (self.Radius),
+##                                                self.s.pAll[jNode].y + (self.Radius),
+##                                                outline="black",width=2,
+##                                                activefill="green",
+##                                                fill="")#Point_List[jNode].color
+##                Widget_to_Node[_oval]= jNode
+##                self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
                 
             #if (100*lenFollower)/n1 >= self.p1:
-##            for iNode in range(len(self.s.pAll[jNode].follower)):
-##                
-##                ToNode= self.s.pAll[jNode].follower[iNode]
-##                self.canvas.create_line(self.s.pAll[jNode].x + self.Half_Radius,
-##                                        self.s.pAll[jNode].y + self.Half_Radius,
-##                                        self.s.pAll[ToNode].x + self.Half_Radius,
-##                                        self.s.pAll[ToNode].y + self.Half_Radius,
-##                                        fill=self.s.pAll[jNode].color,
-##                                        dash=(4, 4),
-##                                        arrow="first",
-##                                        activewidth=3)
+            for iNode in range(len(self.s.pAll[jNode].follower)):
+                
+                ToNode= self.s.pAll[jNode].follower[iNode]
+                self.canvas.create_line(self.s.pAll[jNode].x + self.Half_Radius,
+                                        self.s.pAll[jNode].y + self.Half_Radius,
+                                        self.s.pAll[ToNode].x + self.Half_Radius,
+                                        self.s.pAll[ToNode].y + self.Half_Radius,
+                                        fill="black",
+                                        dash=(4, 4),
+                                        arrow="first",
+                                        activewidth=3)
 ##    
 
     def nodeConverter(self,widget_id):

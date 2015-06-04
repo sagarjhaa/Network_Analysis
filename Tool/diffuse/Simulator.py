@@ -108,7 +108,44 @@ class Simulator:
             
             for EI in Graph.Edges():
                 if EI.GetSrcNId() == i.GetId():
-                        print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
+                        #print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
+
+                        if EI.GetSrcNId() <> EI.GetDstNId() :
+                            node.follower.append(EI.GetDstNId())
+                        
+
+            self.pAll.append(node)
+
+    def genPoints_GenRndGnm(self,Community_Coordinate):
+        """
+        gen n Points
+        """
+
+        Graph = snap.GenRndGnm(snap.PNGraph,self.nPoints, self.nPoints)
+
+        
+        for i in Graph.Nodes():
+
+            XmaxNo = max(Community_Coordinate[1])
+            XminNo = min(Community_Coordinate[1])
+            YmaxNo = max(Community_Coordinate[2])
+            YminNo = min(Community_Coordinate[2])
+
+            node=Node()
+            node.id=i.GetId()
+            
+            r = lambda: random.randint(0,255)
+            rColor = '#%02X%02X%02X' % (r(),r(),r())
+            node.color = rColor
+            
+            node.x=random.randrange(XminNo+1,XmaxNo-20)
+            node.y=random.randrange(YminNo+1,YmaxNo-20)
+            
+            #self.pAll.append(node)
+            
+            for EI in Graph.Edges():
+                if EI.GetSrcNId() == i.GetId():
+                        #print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
 
                         if EI.GetSrcNId() <> EI.GetDstNId() :
                             node.follower.append(EI.GetDstNId())
@@ -116,7 +153,42 @@ class Simulator:
 
             self.pAll.append(node)
             
-    
+    def genPoints_GenForestFire(self,Community_Coordinate):
+        """
+        gen n Points
+        """
+
+        Graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
+
+        
+        for i in Graph.Nodes():
+
+            XmaxNo = max(Community_Coordinate[1])
+            XminNo = min(Community_Coordinate[1])
+            YmaxNo = max(Community_Coordinate[2])
+            YminNo = min(Community_Coordinate[2])
+
+            node=Node()
+            node.id=i.GetId()
+            
+            r = lambda: random.randint(0,255)
+            rColor = '#%02X%02X%02X' % (r(),r(),r())
+            node.color = rColor
+            
+            node.x=random.randrange(XminNo+1,XmaxNo-20)
+            node.y=random.randrange(YminNo+1,YmaxNo-20)
+            
+            #self.pAll.append(node)
+            
+            for EI in Graph.Edges():
+                if EI.GetSrcNId() == i.GetId():
+                        #print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
+
+                        if EI.GetSrcNId() <> EI.GetDstNId() :
+                            node.follower.append(EI.GetDstNId())
+                        
+
+            self.pAll.append(node)
         
     def genPoints(self,Community_Coordinate):
         """
