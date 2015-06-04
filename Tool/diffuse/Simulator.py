@@ -39,7 +39,7 @@ class Simulator:
                 
         '''self.checkParamters()
         '''
-    def genPoints_Snap(self,Community_Coordinate):
+    def genPoints_GenStar(self,Community_Coordinate):
         """
         gen n Points
         """

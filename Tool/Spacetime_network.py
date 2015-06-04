@@ -17,12 +17,12 @@ import nodebox.graphics as nbg
 import nodebox_graph
 
 Communities = 4
-n1 = 5
+n1 = 7
 n2 = 5
 n3 = 5
 n4 = 5
 
-l1 = 5
+l1 = 7
 l2 = 5
 l3 = 5
 l4 = 5
@@ -86,8 +86,10 @@ class Network:
                                 
             if i ==2:
                 #self.s2 = copy.deepcopy(self.s1)
+
                 self.s2 = Simulator(self.n1)
-                self.s2.genPoints_Snap(self.Community_Coordinate[i])
+                self.s2.genPoints_GenStar(self.Community_Coordinate[i])
+                
                 self.n2 = copy.deepcopy(self.n1)#n2
                 self.l2 = copy.deepcopy(self.l1)#l2
                 self.p2 = copy.deepcopy(self.p1)#p2
@@ -299,88 +301,88 @@ class Settings:
         self.No_Nodes_Scale1.bind("<ButtonRelease-1>",self.change_p1)#,self.update_beta_2
         self.No_Nodes_Scale1.grid(row=3,column=4)
 
-        ##############################################################################################################################
-        #Node Control - 2
-        self.spinbox_Label2= tk.Label(top, text='Number of Nodes?')
-        self.spinbox_Label2.grid(row=4, column=0)
-        self.spinbox_Label2= tk.Label(top,text='Nodes 2:')
-        self.spinbox_Label2.grid(row=5, column=0)
-        self.No_Nodes_Scale2 = tk.Scale(top,from_=2, to=200,orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale2.set(5)
-        self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.changeNodes_n2)#,self.update_beta_2
-        self.No_Nodes_Scale2.grid(row=5,column=1)
-
-        #Link Control - 2
-        self.spinbox_Label2= tk.Label(top, text='Number of Links?')
-        self.spinbox_Label2.grid(row=4, column=2)
-        self.No_Nodes_Scale2 = tk.Scale(top,from_=n2, to=(n2*(n2-1)),orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale2.set(n2)
-        self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.changeLinks_l2)#,self.update_beta_2
-        self.No_Nodes_Scale2.grid(row=5,column=2)
-
-        #Opinion Leader Control - 2
-        self.spinbox_Label2= tk.Label(top, text='Opinion Leader Percentage')
-        self.spinbox_Label2.grid(row=4, column=4)
-        self.No_Nodes_Scale2 = tk.Scale(top,from_=1, to=100,orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale2.set(p2)
-        self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.change_p2)#,self.update_beta_2
-        self.No_Nodes_Scale2.grid(row=5,column=4)
-
-        ##############################################################################################################################
-        #Node Control - 3
-        self.spinbox_Label3= tk.Label(top, text='Number of Nodes?')
-        self.spinbox_Label3.grid(row=6, column=0)
-        self.spinbox_Label3= tk.Label(top,text='Nodes 3:')
-        self.spinbox_Label3.grid(row=7, column=0)
-        self.No_Nodes_Scale3 = tk.Scale(top,from_=2, to=200,orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale3.set(5)
-        self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.changeNodes_n3)#,self.update_beta_2
-        self.No_Nodes_Scale3.grid(row=7,column=1)
-
-        #Link Control - 3
-        self.spinbox_Label3= tk.Label(top, text='Number of Links?')
-        self.spinbox_Label3.grid(row=6, column=2)
-        self.No_Nodes_Scale3 = tk.Scale(top,from_=n2, to=(n2*(n2-1)),orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale3.set(n3)
-        self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.changeLinks_l3)
-        self.No_Nodes_Scale3.grid(row=7,column=2)
-
-        #Opinion Leader Control - 3
-        self.spinbox_Label3= tk.Label(top, text='Opinion Leader Percentage')
-        self.spinbox_Label3.grid(row=6, column=4)
-        self.No_Nodes_Scale3 = tk.Scale(top,from_=1, to=100,orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale3.set(p3)
-        self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.change_p3)
-        self.No_Nodes_Scale3.grid(row=7,column=4)
-
-        ##############################################################################################################################
-        #Node Control - 4
-        self.spinbox_Label4= tk.Label(top, text='Number of Nodes?')
-        self.spinbox_Label4.grid(row=8, column=0)
-
-        self.spinbox_Label4= tk.Label(top,text='Nodes 4:')
-        self.spinbox_Label4.grid(row=9, column=0)
-
-        self.No_Nodes_Scale4 = tk.Scale(top,from_=2, to=200,orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale4.set(5)
-        self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.changeNodes_n4)#,self.update_beta_2
-        self.No_Nodes_Scale4.grid(row=9,column=1)
-
-        #Link Control - 4
-        self.spinbox_Label4= tk.Label(top, text='Number of Links?')
-        self.spinbox_Label4.grid(row=8, column=2)
-        self.No_Nodes_Scale4 = tk.Scale(top,from_=n4, to=(n4*(n4-1)),orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale4.set(n4)
-        self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.changeLinks_l4)
-        self.No_Nodes_Scale4.grid(row=9,column=2)
-
-        #Opinion Leader Control - 4
-        self.spinbox_Label4= tk.Label(top, text='Opinion Leader Percentage')
-        self.spinbox_Label4.grid(row=8, column=4)
-        self.No_Nodes_Scale4 = tk.Scale(top,from_=1, to=100,orient=HORIZONTAL,length=200)
-        self.No_Nodes_Scale4.set(p4)
-        self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.change_p4)
-        self.No_Nodes_Scale4.grid(row=9,column=4)
+##        ##############################################################################################################################
+##        #Node Control - 2
+##        self.spinbox_Label2= tk.Label(top, text='Number of Nodes?')
+##        self.spinbox_Label2.grid(row=4, column=0)
+##        self.spinbox_Label2= tk.Label(top,text='Nodes 2:')
+##        self.spinbox_Label2.grid(row=5, column=0)
+##        self.No_Nodes_Scale2 = tk.Scale(top,from_=2, to=200,orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale2.set(5)
+##        self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.changeNodes_n2)#,self.update_beta_2
+##        self.No_Nodes_Scale2.grid(row=5,column=1)
+##
+##        #Link Control - 2
+##        self.spinbox_Label2= tk.Label(top, text='Number of Links?')
+##        self.spinbox_Label2.grid(row=4, column=2)
+##        self.No_Nodes_Scale2 = tk.Scale(top,from_=n2, to=(n2*(n2-1)),orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale2.set(n2)
+##        self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.changeLinks_l2)#,self.update_beta_2
+##        self.No_Nodes_Scale2.grid(row=5,column=2)
+##
+##        #Opinion Leader Control - 2
+##        self.spinbox_Label2= tk.Label(top, text='Opinion Leader Percentage')
+##        self.spinbox_Label2.grid(row=4, column=4)
+##        self.No_Nodes_Scale2 = tk.Scale(top,from_=1, to=100,orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale2.set(p2)
+##        self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.change_p2)#,self.update_beta_2
+##        self.No_Nodes_Scale2.grid(row=5,column=4)
+##
+##        ##############################################################################################################################
+##        #Node Control - 3
+##        self.spinbox_Label3= tk.Label(top, text='Number of Nodes?')
+##        self.spinbox_Label3.grid(row=6, column=0)
+##        self.spinbox_Label3= tk.Label(top,text='Nodes 3:')
+##        self.spinbox_Label3.grid(row=7, column=0)
+##        self.No_Nodes_Scale3 = tk.Scale(top,from_=2, to=200,orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale3.set(5)
+##        self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.changeNodes_n3)#,self.update_beta_2
+##        self.No_Nodes_Scale3.grid(row=7,column=1)
+##
+##        #Link Control - 3
+##        self.spinbox_Label3= tk.Label(top, text='Number of Links?')
+##        self.spinbox_Label3.grid(row=6, column=2)
+##        self.No_Nodes_Scale3 = tk.Scale(top,from_=n2, to=(n2*(n2-1)),orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale3.set(n3)
+##        self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.changeLinks_l3)
+##        self.No_Nodes_Scale3.grid(row=7,column=2)
+##
+##        #Opinion Leader Control - 3
+##        self.spinbox_Label3= tk.Label(top, text='Opinion Leader Percentage')
+##        self.spinbox_Label3.grid(row=6, column=4)
+##        self.No_Nodes_Scale3 = tk.Scale(top,from_=1, to=100,orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale3.set(p3)
+##        self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.change_p3)
+##        self.No_Nodes_Scale3.grid(row=7,column=4)
+##
+##        ##############################################################################################################################
+##        #Node Control - 4
+##        self.spinbox_Label4= tk.Label(top, text='Number of Nodes?')
+##        self.spinbox_Label4.grid(row=8, column=0)
+##
+##        self.spinbox_Label4= tk.Label(top,text='Nodes 4:')
+##        self.spinbox_Label4.grid(row=9, column=0)
+##
+##        self.No_Nodes_Scale4 = tk.Scale(top,from_=2, to=200,orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale4.set(5)
+##        self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.changeNodes_n4)#,self.update_beta_2
+##        self.No_Nodes_Scale4.grid(row=9,column=1)
+##
+##        #Link Control - 4
+##        self.spinbox_Label4= tk.Label(top, text='Number of Links?')
+##        self.spinbox_Label4.grid(row=8, column=2)
+##        self.No_Nodes_Scale4 = tk.Scale(top,from_=n4, to=(n4*(n4-1)),orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale4.set(n4)
+##        self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.changeLinks_l4)
+##        self.No_Nodes_Scale4.grid(row=9,column=2)
+##
+##        #Opinion Leader Control - 4
+##        self.spinbox_Label4= tk.Label(top, text='Opinion Leader Percentage')
+##        self.spinbox_Label4.grid(row=8, column=4)
+##        self.No_Nodes_Scale4 = tk.Scale(top,from_=1, to=100,orient=HORIZONTAL,length=200)
+##        self.No_Nodes_Scale4.set(p4)
+##        self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.change_p4)
+##        self.No_Nodes_Scale4.grid(row=9,column=4)
 
         ##############################################################################################################################
         #Radius Control
