@@ -7,6 +7,7 @@ Created on March 17, 2015
 from Tkinter import *
 import Tkinter as tk
 import random as rd
+import copy
 
 from Community_Coordinates import CommunityCoordinates_Generator
 #from diffusion.SimulatorExperimence import SimulatorExperimence
@@ -31,7 +32,7 @@ p2 = 40
 p3 = 40
 p4 = 40
 
-Radius = 20
+Radius = 10
 
 Widget_to_Node = {}
 
@@ -44,7 +45,7 @@ class Network:
         self.master.grid()
         self.master.rowconfigure(0,weight=1)
         self.master.columnconfigure(0,weight=1)
-        self.canvas = Canvas(self.master,width=w,height=h,bg="grey")
+        self.canvas = Canvas(self.master,width=w-250,height=h-150,bg="grey")
         self.canvas.grid(row=0,rowspan=1,column=0)
         self.Community_Coordinate = {}
         self.Communities = Communities
@@ -78,49 +79,77 @@ class Network:
                 
                 self.canvas.itemconfig(_polygon,fill="#fff") ##d47284
                 self.s1 = Simulator(self.n1)
+                #self.s1.genPoints_Snap(self.Community_Coordinate[1])
                 self.s1.genPoints(self.Community_Coordinate[1])           
                 self.s1.genLinks(l1)
-                self.__drawElements(self.s1,self.n1,self.p1)
+                self.__drawElements(self.s1,self.n1,self.p1,i)
                                 
             if i ==2:
-                self.n2 = n2
-                self.l2 = l2
-                self.p2 = p2
+                #self.s2 = copy.deepcopy(self.s1)
+                self.s2 = Simulator(self.n1)
+                self.s2.genPoints_Snap(self.Community_Coordinate[i])
+                self.n2 = copy.deepcopy(self.n1)#n2
+                self.l2 = copy.deepcopy(self.l1)#l2
+                self.p2 = copy.deepcopy(self.p1)#p2
 
                 self.canvas.itemconfig(_polygon,fill="#fff") #b0ff01
 ##                self.s2 = Simulator(self.n2)
 ##                self.s2.genPoints(self.Community_Coordinate[i])           
 ##                self.s2.genLinks(l2)
-##                self.__drawElements(self.s2,self.n2,self.p2)
+                self.__drawElements(self.s2,self.n2,self.p2,i)
 
             if i ==3:
-                self.n3 = n3
-                self.l3 = l3
-                self.p3 = p3
+                self.s3 = copy.deepcopy(self.s1)
+                self.n3 = copy.deepcopy(self.n1)#n3
+                self.l3 = copy.deepcopy(self.l1)#l3
+                self.p3 = copy.deepcopy(self.p1)#p3
                 
                 self.canvas.itemconfig(_polygon,fill="#fff") #4d1b7b
 ##                self.s3 = Simulator(self.n3)
 ##                self.s3.genPoints(self.Community_Coordinate[i])           
 ##                self.s3.genLinks(l3)
-##                self.__drawElements(self.s3,self.n3,self.p3)
+                self.__drawElements(self.s3,self.n3,self.p3,i)
 
                     
             if i ==4:
-                self.n4 = n4
-                self.l4 = l4
-                self.p4 = p4
+                self.s4 = copy.deepcopy(self.s1)
+                self.n4 = copy.deepcopy(self.n1)#n4
+                self.l4 = copy.deepcopy(self.l1)#l4
+                self.p4 = copy.deepcopy(self.p1)#p4
                 
                 self.canvas.itemconfig(_polygon,fill="#fff")#3279d3
 ##                self.s4 = Simulator(self.n4)
 ##                self.s4.genPoints(self.Community_Coordinate[i])           
 ##                self.s4.genLinks(l4)
-##                self.__drawElements(self.s4,self.n4,self.p4)
+                self.__drawElements(self.s4,self.n4,self.p4,i)
 
-    def __drawElements(self,s,n,p):
+    def __drawElements(self,s,n,p,i):
 
         self.s = s
         self.n = n
         self.p = p
+      
+        width = w - 250
+        hwidth = width/2
+
+        height = h - 150
+        hheight = height /2
+        
+        if i == 2:
+            for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].x = self.s1.pAll[jNode].x +  hwidth + 10
+                self.s.pAll[jNode].y = self.s1.pAll[jNode].y 
+
+        if i == 3:
+            for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].y = self.s.pAll[jNode].y +  hheight + 10
+
+        if i ==4 :
+            for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].x = self.s.pAll[jNode].x +  hwidth + 10
+                self.s.pAll[jNode].y = self.s.pAll[jNode].y +  hheight + 10
+            
+                
 
         for jNode in range(len(self.s.pAll)):
 
@@ -140,8 +169,8 @@ class Network:
                                                 self.s.pAll[jNode].y,
                                                 self.s.pAll[jNode].x + (self.Radius + (50 * lenFollower)/self.n),
                                                 self.s.pAll[jNode].y + (self.Radius + (50 * lenFollower)/self.n),
-                                                outline="black",
-                                                fill=self.s.pAll[jNode].color,
+                                                outline=self.s.pAll[jNode].color,
+                                                fill="",
                                                 width=2,
                                                 activefill="green") #Point_List1[jNode].color
                 Widget_to_Node[_oval]= jNode
@@ -157,6 +186,9 @@ class Network:
                                                 outline="black",width=2,
                                                 activefill="green",
                                                 fill="")#Point_List[jNode].color
+                Widget_to_Node[_oval]= jNode
+                self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
+                
             #if (100*lenFollower)/n1 >= self.p1:
 ##            for iNode in range(len(self.s.pAll[jNode].follower)):
 ##                
