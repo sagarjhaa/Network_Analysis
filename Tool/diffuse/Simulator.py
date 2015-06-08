@@ -17,6 +17,9 @@ def isExist(l,key):
             return 1
     return -1
 
+NodeID = 0
+
+
 class Simulator:
     '''
     Simulator for Difussion
@@ -43,6 +46,8 @@ class Simulator:
         """
         gen n Points
         """
+        global NodeID
+        
         print "-" * 50
         print "GenStar"
         print "-" * 50
@@ -66,6 +71,12 @@ class Simulator:
 
         #Graph = snap.GenRndGnm(snap.PNGraph, self.nPoints, self.nPoints)
         #Graph = snap.GenRndGnm(snap.PUNGraph, self.nPoints, self.nPoints)
+
+        temp = {}
+        for i in Graph.Nodes():
+            #print i.GetId()
+            temp[i.GetId()] = NodeID
+            NodeID = NodeID + 1
         
         for i in Graph.Nodes():
 
@@ -75,7 +86,7 @@ class Simulator:
             YminNo = min(Community_Coordinate[2])
 
             node=Node()
-            node.id=i.GetId()
+            node.id=temp[i.GetId()]#i.GetId()
             
             r = lambda: random.randint(0,255)
             rColor = '#%02X%02X%02X' % (r(),r(),r())
@@ -91,7 +102,8 @@ class Simulator:
                         #print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
 
                         if EI.GetSrcNId() <> EI.GetDstNId() :
-                            node.follower.append(EI.GetDstNId())
+                            node.follower.append(temp[EI.GetDstNId()])
+                            #node.follower.append(EI.GetDstNId())
                         
             print node.id, node.follower
             self.pAll.append(node)
@@ -103,9 +115,16 @@ class Simulator:
         print "-" * 50
         print "GenRndGnm"
         print "-" * 50
+
+        global NodeID
         
         Graph = snap.GenRndGnm(snap.PNGraph,self.nPoints, self.nPoints)
 
+        temp = {}
+        for i in Graph.Nodes():
+            #print i.GetId()
+            temp[i.GetId()] = NodeID
+            NodeID = NodeID + 1
         
         for i in Graph.Nodes():
 
@@ -115,7 +134,7 @@ class Simulator:
             YminNo = min(Community_Coordinate[2])
 
             node=Node()
-            node.id=i.GetId()
+            node.id=temp[i.GetId()]#i.GetId()
             
             r = lambda: random.randint(0,255)
             rColor = '#%02X%02X%02X' % (r(),r(),r())
@@ -131,7 +150,8 @@ class Simulator:
                         #print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
 
                         if EI.GetSrcNId() <> EI.GetDstNId() :
-                            node.follower.append(EI.GetDstNId())
+                            node.follower.append(temp[EI.GetDstNId()])
+                            #node.follower.append(EI.GetDstNId())
                         
             print node.id, node.follower
             self.pAll.append(node)
@@ -144,9 +164,17 @@ class Simulator:
         print "-" * 50
         print "GenForestFire"
         print "-" * 50
+
+        global NodeID
         
         Graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
 
+        temp = {}
+        for i in Graph.Nodes():
+            #print i.GetId()
+            temp[i.GetId()] = NodeID
+            NodeID = NodeID + 1
+        
         
         for i in Graph.Nodes():
 
@@ -156,7 +184,7 @@ class Simulator:
             YminNo = min(Community_Coordinate[2])
 
             node=Node()
-            node.id=i.GetId()
+            node.id=temp[i.GetId()]#i.GetId()
             
             r = lambda: random.randint(0,255)
             rColor = '#%02X%02X%02X' % (r(),r(),r())
@@ -172,7 +200,8 @@ class Simulator:
                         #print "edge: (%d, %d)" % (EI.GetSrcNId(), EI.GetDstNId())
 
                         if EI.GetSrcNId() <> EI.GetDstNId() :
-                            node.follower.append(EI.GetDstNId())
+                            node.follower.append(temp[EI.GetDstNId()])
+                            #node.follower.append(EI.GetDstNId())
                         
             print node.id, node.follower
             self.pAll.append(node)
@@ -181,6 +210,7 @@ class Simulator:
         """
         gen n Points
         """
+        global NodeID
         print "Random Network"
         print "-" * 50
         
@@ -193,7 +223,10 @@ class Simulator:
             YminNo = min(Community_Coordinate[2])
 
             node=Node()
-            node.id=i
+            node.id=NodeID#i
+            #print "NodeID ",node.id
+            NodeID = NodeID + 1
+            
             
             r = lambda: random.randint(0,255)
             rColor = '#%02X%02X%02X' % (r(),r(),r())
@@ -209,9 +242,9 @@ class Simulator:
         generate links
         '''
         self.nLinks = nLinks
-        tempLinks = 0
+        tempLinks = 1
         
-        for fromId in range(self.nPoints):            
+        for fromId in range(self.nPoints):
             n = random.randrange(self.nPoints)
             
             while fromId == n or n in self.pAll[fromId].links:
@@ -221,8 +254,8 @@ class Simulator:
             self.pAll[fromId].links.append(n)
             self.pAll[n].follower.append(fromId)
 
-        if tempLinks < self.nLinks:
-            self.genRandomLinks(tempLinks)
+##        if tempLinks < self.nLinks:
+##            self.genRandomLinks(tempLinks)
 
     def genRandomLinks(self,tempLinks):
         '''

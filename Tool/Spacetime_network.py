@@ -15,6 +15,8 @@ from diffuse.Simulator import Simulator
 import nodebox.graphics as nbg
 import nodebox_graph
 
+
+
 #Initilization
 '''
     communities is the total number of communities displayed on the screen.
@@ -22,7 +24,7 @@ import nodebox_graph
     l1,l2,l3,l4 are the links in the respective communities.
     p1,p2,p3,p4 are the initlial percentage for opnion leader of all communities.
 '''
-Communities = 4
+Communities = 2
 n1 = 7    
 n2 = 5
 n3 = 5
@@ -55,6 +57,8 @@ class Network:
         self.canvas = Canvas(self.master,width=w-250,height=h-150,bg="grey")
         self.canvas.grid(row=0,rowspan=1,column=0)
 
+        self.SPALL = []
+        
         #Community_Coordinate dictionary to store the coordinates of all communities.
         self.Community_Coordinate = {}
         #Communities is the variable to store the number of communities.
@@ -91,7 +95,8 @@ class Network:
                 
                 for sag in range(len(self.s1.pAll)):
                     print self.s1.pAll[sag].id,self.s1.pAll[sag].follower
-                    
+                print "-"  * 50
+                self.SPALL.append(self.s1)
                 self.__drawElements(self.s1,self.n1,self.p1,i)
                                 
             if i ==2:
@@ -110,6 +115,7 @@ class Network:
 ##                self.s2 = Simulator(self.n2)
 ##                self.s2.genPoints(self.Community_Coordinate[i])           
 ##                self.s2.genLinks(l2)
+                self.SPALL.append(self.s2)
                 self.__drawElements(self.s2,self.n2,self.p2,i)
 
             if i ==3:
@@ -127,6 +133,7 @@ class Network:
 ##                self.s3 = Simulator(self.n3)
 ##                self.s3.genPoints(self.Community_Coordinate[i])           
 ##                self.s3.genLinks(l3)
+                self.SPALL.append(self.s3)
                 self.__drawElements(self.s3,self.n3,self.p3,i)
 
                     
@@ -145,6 +152,7 @@ class Network:
 ##                self.s4 = Simulator(self.n4)
 ##                self.s4.genPoints(self.Community_Coordinate[i])           
 ##                self.s4.genLinks(l4)
+                self.SPALL.append(self.s4)
                 self.__drawElements(self.s4,self.n4,self.p4,i)
 
     def __drawElements(self,s,n,p,i):
@@ -217,8 +225,9 @@ class Network:
                                             fill="",
                                             width=2,
                                             activefill="green")
-            print _oval
-            Widget_to_Node[_oval]= jNode
+            #print _oval            
+            Widget_to_Node[_oval]= self.s.pAll[jNode].id#jNode
+            #Widget_to_Node[jNode]= _oval
             self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
                 
 ##            else:
@@ -247,7 +256,26 @@ class Network:
 ##                                            dash=(4, 4),
 ##                                            arrow="first",
 ##                                            activewidth=3)
-    
+        '''
+        UPdating the node id with the oval id
+        '''
+##        if i== i:
+##            print "-"*12
+##            for jNode in range(len(self.SPALL)):
+##                ab = self.SPALL[jNode]
+##                for iNode in range(len(ab.pAll)):
+##                    print ab.pAll[iNode].id,ab.pAll[iNode].follower
+            
+        
+##        for jNode in (range(len(self.s.pAll))):
+##            
+##            self.s.pAll[jNode].id = Widget_to_Node[jNode]
+##            
+##            for ifollow in range(len(self.s.pAll[jNode].follower)):
+##                self.s.pAll[jNode].follower[ifollow] = Widget_to_Node[self.s.pAll[jNode].follower[ifollow]]
+##            print self.s.pAll[jNode].id,self.s.pAll[jNode].follower   
+                
+            
 ##    def nodeConverter(self,widget_id):
 ##
 ##        if widget_id-1 ==1:
@@ -276,17 +304,29 @@ class Network:
         
     def __showLinkInfo(self,event):
 
-        widget_id = event.widget.find_closest(event.x,event.y)
+        print "-"*50
+        widget_id = event.widget.find_closest(event.x,event.y)        
         jNode = Widget_to_Node[widget_id[0]]
+        for i in range(2):
+            ab = self.SPALL[i]
+            for j in range(len(ab.pAll)):
+                if jNode == ab.pAll[j].id:
+                    #print "which s ? ",i
+                    print jNode,ab.pAll[j].follower
+                    break
+                
+                
+##        ab = self.SPALL[main]
+##        print jNode,ab.pAll[jNode].follower
+##        print "-"*50
         
-        
-        nbg.canvas = nbg.Canvas(width=640, height=480, name="NodeBox for OpenGL", resizable=False)
-        nodebox_graph.create_graph(jNode,self.s1)
-        nbg.canvas.clear
-        #nbg.canvas.size = 700,700
-        nbg.canvas.fullscreen = True
-        nbg.canvas.run(nodebox_graph.draw)
-        del nbg.canvas
+##        nbg.canvas = nbg.Canvas(width=640, height=480, name="NodeBox for OpenGL", resizable=False)
+##        nodebox_graph.create_graph(jNode,self.s1)
+##        nbg.canvas.clear
+##        #nbg.canvas.size = 700,700
+##        nbg.canvas.fullscreen = True
+##        nbg.canvas.run(nodebox_graph.draw)
+##        del nbg.canvas
         
 
 
