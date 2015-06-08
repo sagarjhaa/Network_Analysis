@@ -43,29 +43,9 @@ class Simulator:
         """
         gen n Points
         """
-
-        #GenFull
-        #GenCircle
-        #GenGrid
-        #GenStar
-        #GenTree
-        #GenRndGnm
-        #GenPrefAttach
-        #GenGeoPrefAttach
-        #GenForestFire
-        #GenSmallWorld
-        #GenBaraHierar
-        #GenConfModel
-        #GenConfModel
-        #GenCopyModel
-        #GenDegSeq
-        #GenRewire
-        #GenRndDegK
-        #GenRndPowerLaw
-        #GenRMat
-        #GenRMatEpinions
-        
-        
+        print "-" * 50
+        print "GenStar"
+        print "-" * 50
         #Graph = snap.GenFull(snap.PNGraph, self.nPoints)
         #Graph = snap.GenFull(snap.PUNGraph, 5)
         #Graph = snap.GenFull(snap.PNEANet, 5)
@@ -113,14 +93,17 @@ class Simulator:
                         if EI.GetSrcNId() <> EI.GetDstNId() :
                             node.follower.append(EI.GetDstNId())
                         
-
+            print node.id, node.follower
             self.pAll.append(node)
 
     def genPoints_GenRndGnm(self,Community_Coordinate):
         """
         gen n Points
         """
-
+        print "-" * 50
+        print "GenRndGnm"
+        print "-" * 50
+        
         Graph = snap.GenRndGnm(snap.PNGraph,self.nPoints, self.nPoints)
 
         
@@ -150,7 +133,7 @@ class Simulator:
                         if EI.GetSrcNId() <> EI.GetDstNId() :
                             node.follower.append(EI.GetDstNId())
                         
-
+            print node.id, node.follower
             self.pAll.append(node)
             
     def genPoints_GenForestFire(self,Community_Coordinate):
@@ -158,6 +141,10 @@ class Simulator:
         gen n Points
         """
 
+        print "-" * 50
+        print "GenForestFire"
+        print "-" * 50
+        
         Graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
 
         
@@ -187,13 +174,16 @@ class Simulator:
                         if EI.GetSrcNId() <> EI.GetDstNId() :
                             node.follower.append(EI.GetDstNId())
                         
-
+            print node.id, node.follower
             self.pAll.append(node)
         
     def genPoints(self,Community_Coordinate):
         """
         gen n Points
         """
+        print "Random Network"
+        print "-" * 50
+        
         for i in range(self.nPoints):
 
             
