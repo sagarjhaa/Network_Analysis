@@ -24,7 +24,7 @@ import nodebox_graph
     l1,l2,l3,l4 are the links in the respective communities.
     p1,p2,p3,p4 are the initlial percentage for opnion leader of all communities.
 '''
-Communities = 2
+Communities = 4
 n1 = 7    
 n2 = 5
 n3 = 5
@@ -257,7 +257,7 @@ class Network:
 ##                                            arrow="first",
 ##                                            activewidth=3)
         '''
-        UPdating the node id with the oval id
+        Updating the node id with the oval id
         '''
 ##        if i== i:
 ##            print "-"*12
@@ -304,29 +304,28 @@ class Network:
         
     def __showLinkInfo(self,event):
 
+        tempbool = False
         print "-"*50
         widget_id = event.widget.find_closest(event.x,event.y)        
         jNode = Widget_to_Node[widget_id[0]]
-        for i in range(2):
-            ab = self.SPALL[i]
-            for j in range(len(ab.pAll)):
-                if jNode == ab.pAll[j].id:
-                    #print "which s ? ",i
-                    print jNode,ab.pAll[j].follower
-                    break
-                
-                
-##        ab = self.SPALL[main]
-##        print jNode,ab.pAll[jNode].follower
-##        print "-"*50
         
-##        nbg.canvas = nbg.Canvas(width=640, height=480, name="NodeBox for OpenGL", resizable=False)
-##        nodebox_graph.create_graph(jNode,self.s1)
-##        nbg.canvas.clear
-##        #nbg.canvas.size = 700,700
-##        nbg.canvas.fullscreen = True
-##        nbg.canvas.run(nodebox_graph.draw)
-##        del nbg.canvas
+        for i in range(4):
+            ab = self.SPALL[i]
+                      
+            for j in range(len(ab.pAll)):
+                
+                if jNode == ab.pAll[j].id:
+                    tempbool = True
+                    
+                    nbg.canvas = nbg.Canvas(width=640, height=480, name="NodeBox for OpenGL", resizable=False)
+                    nodebox_graph.create_graph(j,ab)
+                    nbg.canvas.clear
+                    nbg.canvas.fullscreen = True
+                    nbg.canvas.run(nodebox_graph.draw)
+                    del nbg.canvas
+                    
+            if tempbool:
+                break
         
 
 
