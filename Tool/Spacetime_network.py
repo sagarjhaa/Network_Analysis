@@ -57,6 +57,7 @@ class Network:
         self.canvas = Canvas(self.master,width=w-250,height=h-150,bg="grey")
         self.canvas.grid(row=0,rowspan=1,column=0)
 
+        #Collection of all Simulator objects
         self.SPALL = []
         
         #Community_Coordinate dictionary to store the coordinates of all communities.
@@ -93,9 +94,10 @@ class Network:
                 self.s1.genPoints(self.Community_Coordinate[1])           
                 self.s1.genLinks(self.l1)
                 
-                for sag in range(len(self.s1.pAll)):
-                    print self.s1.pAll[sag].id,self.s1.pAll[sag].follower
+                for tempI in range(len(self.s1.pAll)):
+                    print self.s1.pAll[tempI].id,self.s1.pAll[tempI].follower
                 print "-"  * 50
+                
                 self.SPALL.append(self.s1)
                 self.__drawElements(self.s1,self.n1,self.p1,i)
                                 
@@ -178,18 +180,21 @@ class Network:
         
         if i == 2:
             for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].role = "T2"#self.s1.pAll[jNode].role
                 self.s.pAll[jNode].color = self.s1.pAll[jNode].color
                 self.s.pAll[jNode].x = self.s1.pAll[jNode].x +  self.hwidth + 10
                 self.s.pAll[jNode].y = self.s1.pAll[jNode].y 
 
         if i == 3:
             for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].role = self.s1.pAll[jNode].role
                 self.s.pAll[jNode].color = self.s1.pAll[jNode].color
                 self.s.pAll[jNode].x = self.s1.pAll[jNode].x
                 self.s.pAll[jNode].y = self.s1.pAll[jNode].y +  self.hheight + 10
 
         if i == 4:
             for jNode in range(len(self.s.pAll)):
+                self.s.pAll[jNode].role = self.s1.pAll[jNode].role
                 self.s.pAll[jNode].color = self.s1.pAll[jNode].color
                 self.s.pAll[jNode].x = self.s1.pAll[jNode].x +  self.hwidth + 10
                 self.s.pAll[jNode].y = self.s1.pAll[jNode].y +  self.hheight + 10
@@ -225,8 +230,20 @@ class Network:
                                             fill="",
                                             width=2,
                                             activefill="green")
+            
+            if jNode == 0:
+                self.s.pAll[jNode].role = "T4"
+            
+            if self.s.pAll[jNode].role == "T4":
+                self.canvas.itemconfig(_oval,fill="#FF0000")
+            if self.s.pAll[jNode].role == "T2":
+                self.canvas.itemconfig(_oval,fill="#FF8000")
+            if self.s.pAll[jNode].role == "T3":
+                self.canvas.itemconfig(_oval,fill="#00FF00")
+                
+            
             #print _oval            
-            Widget_to_Node[_oval]= self.s.pAll[jNode].id#jNode
+            Widget_to_Node[_oval]= self.s.pAll[jNode].id
             #Widget_to_Node[jNode]= _oval
             self.canvas.tag_bind(_oval,'<ButtonPress-1>',self.__showLinkInfo)
                 

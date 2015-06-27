@@ -20,6 +20,8 @@ class Node:
         self.toIds=[]
         self.status=0
         self.p=0
+        self.role = ""
+        self.probability = ""
         self.color = ""
         self.follower=[]
         self.cover = False

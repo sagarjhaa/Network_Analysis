@@ -205,14 +205,24 @@ class Simulator:
             YminNo = min(Community_Coordinate[2])
 
             node=Node()
-            node.id=NodeID#i
+            node.id=NodeID
             #print "NodeID ",node.id
             NodeID = NodeID + 1
             
             
             r = lambda: random.randint(0,255)
             rColor = '#%02X%02X%02X' % (r(),r(),r())
-            node.color = rColor
+            node.color = "#CC0000" #rColor
+            
+            roleList = ['T1','T2','T3']
+            node.role = random.choice(roleList)
+
+            if node.role == "T1":
+                node.probability = random.uniform(0,0.5)
+            if node.role == "T2":
+                node.probability = random.uniform(0,0.2)
+            if node.role == "T3":
+                node.probability = random.uniform(0,0.05)
             
             node.x=random.randrange(XminNo+1,XmaxNo-20)
             node.y=random.randrange(YminNo+1,YmaxNo-20)
@@ -229,12 +239,13 @@ class Simulator:
         for fromId in range(self.nPoints):
             n = random.randrange(self.nPoints)
             
-            while fromId == n or n in self.pAll[fromId].links:
+            while self.pAll[fromId].id == self.pAll[n].id or self.pAll[n].id in self.pAll[fromId].links:
                 n = random.randrange(self.nPoints)
                 
             tempLinks = tempLinks + 1
-            self.pAll[fromId].links.append(n)
-            self.pAll[n].follower.append(fromId)
+            #print "fromId ",fromId,"appending: ",self.pAll[n].id
+            self.pAll[fromId].links.append(self.pAll[n].id)
+            self.pAll[n].follower.append(self.pAll[fromId].id)
 
 ##        if tempLinks < self.nLinks:
 ##            self.genRandomLinks(tempLinks)

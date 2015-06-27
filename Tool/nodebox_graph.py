@@ -13,7 +13,7 @@ import random as rd
 # Nodes and edges can be styled with fill, stroke, strokewidth parameters.
 # Each node displays its id as a text label, stored as a Text object in Node.text.
 # To hide the node label, set the text parameter to None.
-#g =  None
+
 g = Graph()
 
 # Random nodes.
@@ -23,70 +23,72 @@ def create_graph(p_node,s):
     global g
 
     g = Graph()
-    
     p = p_node
     
-    print "s",s
-    print "p_node",p_node
+    parent_follower  = s.pAll[p_node].follower
+    parent_node_name = s.pAll[p_node].id
     
-    temp = s.pAll[p_node].follower
+    g.add_node(id=str(parent_node_name),radius = 5,stroke = color(1, 0, 0.25, 1),text = color(1))
 
-    tp_node = s.pAll[p_node].id
-    print "tp_node",tp_node
-    g.add_node(id=str(tp_node),radius = 5,stroke = color(1, 0, 0.25, 1),text = color(1))
-
+    print parent_node_name,"--->",parent_follower
     
-    for i in range(len(temp)):#100
-        g.add_node(id=str(temp[i]), 
+    for i in range(len(parent_follower)):
+        g.add_node(id=str(parent_follower[i]), 
             radius = 5,
             stroke = color(1), 
               text = color(1))
     
     # Random edges.
-    p_links = s.pAll[p_node].follower
-    for i in range(len(p_links)):
-        node1 = str(tp_node)#choice(g.nodes)
-        node2 = str(p_links[i])#choice(g.nodes)
+    for i in range(len(parent_follower)):
+        node1 = str(parent_node_name)
+        node2 = str(parent_follower[i])
         g.add_edge(node1, node2,
                    length = 500.0,
                    weight = random(),
                    stroke = color(1, 0, 0.25, 1))
 
 
-##    #New Round
-##    for I in range(len(temp)):
-##        
-##        p_node = s.pAll[p].follower[I]
-##        print p_node
-##        p_links = s.pAll[p_node].follower
-##
-##        r     = rd.choice([x * 0.01 for x in range(0,100)])#rd.choice([0,51,255])    #rd.randint(10,200)
-##        green = rd.choice([x * 0.01 for x in range(0,100)]) #rd.choice([255,128,255]) #rd.randint(0,100)
-##        b     = rd.choice([x * 0.01 for x in range(0,100)]) #rd.choice([128,0,255])   #rd.randint(0,200)
-##
-##        if len(p_links) <> 0:
-##                
-##            for i in range(len(p_links)):
-##                node1 = str(p_node)#choice(g.nodes)
-##
-##                bul = True
-##                if p_links[i] not in s.pAll[p].follower:  #Not a parent follower
-##                    
-##                    for j in range (I):                  #Loop to check another sibling's follower
-##                        
-##                        sibling = s.pAll[p].follower[j]
-##                        
-##                        if p_links[i] in s.pAll[sibling].follower:
-##
-##                            bul = False
-##
-##                    if bul:
-##                        g.add_node(id=str(p_links[i]),radius = 5,stroke = color(r, green, b, 1),text = color(1))
-##                        node2 = str(p_links[i])#choice(g.nodes)
-##                        g.add_edge(node1, node2,
-##                                   length = 50.0,
-##                                   weight = random(),
-##                                   stroke = color(r, green, b, 1))
+##  New Round
+    for I in range(len(parent_follower)):
+        
+        p_node = s.pAll[p].follower[I]
+        parent_name = p_node
+        
+        p_node = node_convert(p_node,s)
+        p_links = s.pAll[p_node].follower
+
+        p_node = parent_name #change
+        
+        print parent_name,"-->",p_links
+
+        r     = rd.choice([x * 0.01 for x in range(0,100)]) #rd.choice([0,51,255])    #rd.randint(10,200)
+        green = rd.choice([x * 0.01 for x in range(0,100)]) #rd.choice([255,128,255]) #rd.randint(0,100)
+        b     = rd.choice([x * 0.01 for x in range(0,100)]) #rd.choice([128,0,255])   #rd.randint(0,200)
+
+        if len(p_links) <> 0:
+                
+            for i in range(len(p_links)):
+                node1 = str(parent_name)
+
+                bul = True
+                if p_links[i] not in s.pAll[p].follower:  #Not a parent follower
+                    
+                    for j in range (I):                   #Loop to check another sibling's follower
+                        
+                        sibling = s.pAll[p].follower[j]
+                        sibling = node_convert(sibling,s)
+                        
+                        if p_links[i] in s.pAll[sibling].follower:
+
+                            bul = True #Controlling Parameter
+
+                    if bul:
+                        g.add_node(id=str(p_links[i]),radius = 5,stroke = color(r, green, b, 1),text = color(1))
+                        node2 = str(p_links[i])
+                        g.add_edge(node1, node2,
+                                   length = 50.0,
+                                   weight = random(),
+                                   stroke = color(r, green, b, 1))
                         
 
     
@@ -102,11 +104,17 @@ def create_graph(p_node,s):
             node.edges[0].length = 0.5
 
     g.prune(depth=0)          # Remove orphaned nodes with no connections.
-    g.distance         = 15   # Overall spacing between nodes.
+    g.distance         = 25   # Overall spacing between nodes.
     g.layout.force     = 0.01 # Strength of the attractive & repulsive force.
-    g.layout.repulsion = 5   # Repulsion radius.
+    g.layout.repulsion = 5    # Repulsion radius.
 
     dragged = None
+
+def node_convert(temp,s):
+    for iCounter in range(len(s.pAll)):
+        if temp == s.pAll[iCounter].id:
+            return iCounter
+    
 
 def draw(canvas):
 
