@@ -15,6 +15,10 @@ from diffuse.Simulator import Simulator
 import nodebox.graphics as nbg
 import nodebox_graph
 
+import tkFileDialog
+import shp_reader
+import dbfload as dbf
+import Tkconstants
 
 
 #Initilization
@@ -54,22 +58,24 @@ class Network:
         self.master.grid()
         self.master.rowconfigure(0,weight=1)
         self.master.columnconfigure(0,weight=1)
+        self.__createMenu()
+        
         self.canvas = Canvas(self.master,width=w-250,height=h-150,bg="grey")
         self.canvas.grid(row=0,rowspan=1,column=0)
 
-        #Collection of all Simulator objects
-        self.SPALL = []
-        
-        #Community_Coordinate dictionary to store the coordinates of all communities.
-        self.Community_Coordinate = {}
-        #Communities is the variable to store the number of communities.
-        self.Communities = Communities
-        #Function CommmunityCoordinates_Generator generate the coordinate for the given number of communities.
-        self.Community_Coordinate = CommunityCoordinates_Generator(self.Communities,w,h)
-
-        #Radius and Half_Radius of the nodes.
-        self.Radius = Radius
-        self.Half_Radius = Radius/2
+##        #Collection of all Simulator objects
+##        self.SPALL = []
+##        
+##        #Community_Coordinate dictionary to store the coordinates of all communities.
+##        self.Community_Coordinate = {}
+##        #Communities is the variable to store the number of communities.
+##        self.Communities = Communities
+##        #Function CommmunityCoordinates_Generator generate the coordinate for the given number of communities.
+##        self.Community_Coordinate = CommunityCoordinates_Generator(self.Communities,w,h)
+##
+##        #Radius and Half_Radius of the nodes.
+##        self.Radius = Radius
+##        self.Half_Radius = Radius/2
 
         '''
 
@@ -80,82 +86,146 @@ class Network:
         Drawing elements (Nodes and Links)to the communities
         
         '''
+    def __createMenu(self):
+
+        """
+        Creates GUI components and register events
+        """
+        self.menubar = Menu(self.master)
+        self.dbfdata = None
         
-        for i in range(1,self.Communities+1):
-            _polygon = self.canvas.create_polygon(self.Community_Coordinate[i][0],outline='red',width=2)
+        filemenu = Menu(self.menubar, tearoff=0)
+        filemenu.add_command(label="Open" , command=self.__openShpfile)
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.master.quit)
+        self.menubar.add_cascade(label="File", menu=filemenu)
+        
+        self.attibmenu = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Attibutes", menu=self.attibmenu,state='disabled')
+        self.menubar.add_cascade(label="Settings",command=onClick)
+
+        #Sagar Jha
+        #self.menubar.add_cascade(label="Simulator",command=self.__simulate)
+        #Added Simulator 
+        
+        self.master.config(menu=self.menubar)
+
+    def __openShpfile(self):
+        """
+        Open a shapefile and read in the contents, pop up the attribute menu 
+        with the attributes of the shapefile
+        """   
+        print "open shape file!"
+        directory=tkFileDialog.askopenfilename(filetypes=[("SHAPE_FILE","*.shp")])
+        #"C:/Users/sjha1/Documents/GitHub/Simulator_GUI/Python-Sample/data/states/48States.shp"
+        
+        print directory
+        
+        if directory == "":
+            return
+        
+        self.shapes, self.shp_type, self.bbox = shp_reader.read_shp(directory)
+        #read corresponding dbf data
+        dbfFile = dbf.DbfLoader(directory[:-3] + "dbf")
+        
+        t = dbfFile.table2list()
+        varNames = dbfFile.get_field_names()
+        variables = {}
+        for variable in varNames:
+            variables[variable] = [record[varNames.index(variable)] for record in t]
             
-            if i == 1:
-                self.n1 = n1
-                self.l1 = l1
-                self.p1 = p1
-                
-                self.canvas.itemconfig(_polygon,fill="#fff")
-                self.s1 = Simulator(self.n1)
-                self.s1.genPoints(self.Community_Coordinate[1])           
-                self.s1.genLinks(self.l1)
-                
-                for tempI in range(len(self.s1.pAll)):
-                    print self.s1.pAll[tempI].id,self.s1.pAll[tempI].follower
-                print "-"  * 50
-                
-                self.SPALL.append(self.s1)
-                self.__drawElements(self.s1,self.n1,self.p1,i)
-                                
-            if i ==2:
-                '''
-                Generating same node as community 1
-                Drawing a Star Network.
-                '''
-                self.s2 = Simulator(self.n1)
-                self.s2.genPoints_GenStar(self.Community_Coordinate[i])
-                
-                self.n2 = copy.deepcopy(self.n1)
-                self.l2 = copy.deepcopy(self.l1)
-                self.p2 = copy.deepcopy(self.p1)
+        if self.dbfdata!=None:
+            self.attibmenu.delete(0, len(self.dbfdata)-1)
+            
+        #add attributes into menu
+        for key in variables.keys():
+            self.__addAttribute(key)
+        
+        self.dbfdata = variables
+        self.menubar.entryconfig(2, state=Tkconstants.NORMAL)
+        #self.__updateCanvas("STATE_NAME")
+    
+    def __addAttribute(self,attributeName):
+        """
+        Add an attribute to the menu
+        """
+        self.attibmenu.add_command(label=attributeName, command=lambda i=attributeName:self.__updateCanvas(i))
 
-                self.canvas.itemconfig(_polygon,fill="#fff")
-##                self.s2 = Simulator(self.n2)
-##                self.s2.genPoints(self.Community_Coordinate[i])           
-##                self.s2.genLinks(l2)
-                self.SPALL.append(self.s2)
-                self.__drawElements(self.s2,self.n2,self.p2,i)
-
-            if i ==3:
-                '''
-                GenRndGnm Network
-                '''
-                self.s3 = Simulator(self.n1)
-                self.s3.genPoints_GenRndGnm(self.Community_Coordinate[i])
-
-                self.n3 = copy.deepcopy(self.n1)
-                self.l3 = copy.deepcopy(self.l1)
-                self.p3 = copy.deepcopy(self.p1)
-                
-                self.canvas.itemconfig(_polygon,fill="#fff")
-##                self.s3 = Simulator(self.n3)
-##                self.s3.genPoints(self.Community_Coordinate[i])           
-##                self.s3.genLinks(l3)
-                self.SPALL.append(self.s3)
-                self.__drawElements(self.s3,self.n3,self.p3,i)
-
-                    
-            if i ==4:
-                '''
-                GenForestFire Network
-                '''
-                self.s4 = Simulator(self.n1)
-                self.s4.genPoints_GenForestFire(self.Community_Coordinate[i])
-                
-                self.n4 = copy.deepcopy(self.n1)
-                self.l4 = copy.deepcopy(self.l1)
-                self.p4 = copy.deepcopy(self.p1)
-                
-                self.canvas.itemconfig(_polygon,fill="#fff")
-##                self.s4 = Simulator(self.n4)
-##                self.s4.genPoints(self.Community_Coordinate[i])           
-##                self.s4.genLinks(l4)
-                self.SPALL.append(self.s4)
-                self.__drawElements(self.s4,self.n4,self.p4,i)
+##        for i in range(1,self.Communities+1):
+##            _polygon = self.canvas.create_polygon(self.Community_Coordinate[i][0],outline='red',width=2)
+##            
+##            if i == 1:
+##                self.n1 = n1
+##                self.l1 = l1
+##                self.p1 = p1
+##                
+##                self.canvas.itemconfig(_polygon,fill="#fff")
+##                self.s1 = Simulator(self.n1)
+##                self.s1.genPoints(self.Community_Coordinate[1])           
+##                self.s1.genLinks(self.l1)
+##                
+##                for tempI in range(len(self.s1.pAll)):
+##                    print self.s1.pAll[tempI].id,self.s1.pAll[tempI].follower
+##                print "-"  * 50
+##                
+##                self.SPALL.append(self.s1)
+##                self.__drawElements(self.s1,self.n1,self.p1,i)
+##                                
+##            if i ==2:
+##                '''
+##                Generating same node as community 1
+##                Drawing a Star Network.
+##                '''
+##                self.s2 = Simulator(self.n1)
+##                self.s2.genPoints_GenStar(self.Community_Coordinate[i])
+##                
+##                self.n2 = copy.deepcopy(self.n1)
+##                self.l2 = copy.deepcopy(self.l1)
+##                self.p2 = copy.deepcopy(self.p1)
+##
+##                self.canvas.itemconfig(_polygon,fill="#fff")
+####                self.s2 = Simulator(self.n2)
+####                self.s2.genPoints(self.Community_Coordinate[i])           
+####                self.s2.genLinks(l2)
+##                self.SPALL.append(self.s2)
+##                self.__drawElements(self.s2,self.n2,self.p2,i)
+##
+##            if i ==3:
+##                '''
+##                GenRndGnm Network
+##                '''
+##                self.s3 = Simulator(self.n1)
+##                self.s3.genPoints_GenRndGnm(self.Community_Coordinate[i])
+##
+##                self.n3 = copy.deepcopy(self.n1)
+##                self.l3 = copy.deepcopy(self.l1)
+##                self.p3 = copy.deepcopy(self.p1)
+##                
+##                self.canvas.itemconfig(_polygon,fill="#fff")
+####                self.s3 = Simulator(self.n3)
+####                self.s3.genPoints(self.Community_Coordinate[i])           
+####                self.s3.genLinks(l3)
+##                self.SPALL.append(self.s3)
+##                self.__drawElements(self.s3,self.n3,self.p3,i)
+##
+##                    
+##            if i ==4:
+##                '''
+##                GenForestFire Network
+##                '''
+##                self.s4 = Simulator(self.n1)
+##                self.s4.genPoints_GenForestFire(self.Community_Coordinate[i])
+##                
+##                self.n4 = copy.deepcopy(self.n1)
+##                self.l4 = copy.deepcopy(self.l1)
+##                self.p4 = copy.deepcopy(self.p1)
+##                
+##                self.canvas.itemconfig(_polygon,fill="#fff")
+####                self.s4 = Simulator(self.n4)
+####                self.s4.genPoints(self.Community_Coordinate[i])           
+####                self.s4.genLinks(l4)
+##                self.SPALL.append(self.s4)
+##                self.__drawElements(self.s4,self.n4,self.p4,i)
 
     def __drawElements(self,s,n,p,i):
 
@@ -626,6 +696,6 @@ root.geometry=("1000x900+0+0")
 
 NG=Network(root)
 
-mainButton = tk.Button(root, width=20, text='Settings',command=onClick)
-mainButton.grid(row=1, column=1)
+##mainButton = tk.Button(root, width=20, text='Settings',command=onClick)
+##mainButton.grid(row=1, column=1)
 root.mainloop()
