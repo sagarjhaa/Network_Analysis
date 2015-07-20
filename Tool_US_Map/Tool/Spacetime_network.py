@@ -19,8 +19,8 @@ from main_canvas import MainCanvas,GenerateNetwork
 
 import Tkinter as tk  #For the setting 
 
-Communities = 0
-n1,n2,n3,n4 = 0,0,0,0
+Communities = 1
+n1,n2,n3,n4 = 1,1,1,1
 p1,p2,p3,p4 = 0,0,0,0
 l1,l2,l3,l4 = 0,0,0,0
 
@@ -120,7 +120,7 @@ class Settings:
         self.spinbox_Label= tk.Label(top,text='Community:')
         self.spinbox_Label.grid(row=1, column=0)
 
-        self.No_Nodes_Scale = tk.Scale(top,from_=0, to=4,orient=HORIZONTAL,length=200)
+        self.No_Nodes_Scale = tk.Scale(top,from_=1, to=4,orient=HORIZONTAL,length=200)
         self.No_Nodes_Scale.set(Communities)
         self.No_Nodes_Scale.bind("<ButtonRelease-1>",self.changeCommunities)
         self.No_Nodes_Scale.grid(row=1,column=1)
@@ -263,14 +263,14 @@ class Settings:
         self.uButton.grid(row=11,column=2)
 
     def updateControl(self,event):
-        print "Communities: ",Communities
-        print "n1: ",n1
-        print "n2: ",n2
-        print "n3: ",n3
-        print "n4: ",n4
+##        print "Communities: ",Communities
+##        print "n1: ",n1
+##        print "n2: ",n2
+##        print "n3: ",n3
+##        print "n4: ",n4
         Network = self.variable.get()
         #print "Network: ",self.variable.get()
-        GenerateNetwork(Network,n1)
+        GenerateNetwork(Network,n1,n2,n3,n4)
 
     def changeCommunities(self,event):
         global Communities

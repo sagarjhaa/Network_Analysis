@@ -12,7 +12,7 @@ from PolygonParts import PolygonPart
 from Node import Node
 
 # display parameters
-canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 950, 100, 200
+canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 800, 100, 100
 
 Gcanvas = ""
 GCoordinate = ""
@@ -51,9 +51,9 @@ class MainCanvas(object):
         self.__createCanvas()
         
 
-##        for i in range(len(self.CoordinateCollect)):
-##            for j in range(len(self.CoordinateCollect[i].parts)):
-##                print self.CoordinateCollect[i].id,len(self.CoordinateCollect[i].parts),self.CoordinateCollect[i].parts[j]
+        for i in range(len(self.CoordinateCollect)):
+            for j in range(len(self.CoordinateCollect[i].parts)):
+                print self.CoordinateCollect[i].id,len(self.CoordinateCollect[i].parts),j#self.CoordinateCollect[i].parts[j]
          
     def __createCanvas(self):
         """
@@ -159,8 +159,8 @@ class MainCanvas(object):
             # loops through each point and calculate the window coordinates, put in xylist
             for point in polygon.points:
                 
-                pointx = int((point.x -minX)*ratio) + +margin_x/0.5
-                pointy = int((maxY- point.y)*ratio) + +margin_y/5
+                pointx = int((point.x -minX)*ratio) + +margin_x/10#2#0.5
+                pointy = int((maxY- point.y)*ratio) + +margin_y/10#2#5
                 xylist.append(pointx)
                 xylist.append(pointy)
             #print xylist
@@ -274,12 +274,12 @@ class MainCanvas(object):
 
 class GenerateNetwork(object):
 
-    def __init__(self,Network,nPoints):
+    def __init__(self,Network,nPoints1,nPoints2,nPoints3,nPoints4):
 
         global Gcanvas,GCoordinate
         self.canvas = Gcanvas
         self.Network = Network
-        self.nPoints = nPoints
+        self.nPoints = nPoints1+nPoints2+nPoints3+nPoints4
         self.pAll = []
 
         self.drawNode1()
