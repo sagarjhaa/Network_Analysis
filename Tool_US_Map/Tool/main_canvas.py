@@ -299,6 +299,7 @@ class GenerateNetwork(object):
         self.nodes = nodes
         self.dnodes = nodes
         self.nPoints = 0
+        self.OvalNo ={}
         
         for i in range(self.Communities):
             self.nPoints = self.nPoints + self.nodes[i]
@@ -371,6 +372,8 @@ class GenerateNetwork(object):
             if self.node.shape == "circle":
                 _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="white",fill="white", width=2)
 
+            self.OvalNo[_Oval]=self.node.id#[self.node.x,self.node.y]
+            Gcanvas.tag_bind( _Oval, '<ButtonPress-1>', self.__showAttriInfo)
             self.itemNo.append(_Oval)
             self.pAll.append(self.node)
 
@@ -418,6 +421,26 @@ class GenerateNetwork(object):
             
         self.node.x = xPoint
         self.node.y = yPoint
+
+    def __showAttriInfo(self,event):
+        """
+        Show attribute information of clicked unit
+        """        
+        widget_id=event.widget.find_closest(event.x, event.y)
+
+        NodeId = self.OvalNo[widget_id[0]]
+        #print "Nodeid ",self.OvalNo[widget_id[0]]
+
+        for i in range(len(self.pAll)):
+            if self.pAll[i].id == NodeId:
+                print "NodeId: ",NodeId," ---->",self.pAll[i].follower
+                Node1 = self.pAll[i]
+
+                for j in self.pAll[i].follower:
+                    Node2 = self.pAll[j]
+                    _line=Gcanvas.create_line(Node1.x,Node1.y,Node2.x,Node2.y,fill="red")
+                    self.itemNo.append(_line)
+                GNodesItemNo = self.itemNo
         
 
 
