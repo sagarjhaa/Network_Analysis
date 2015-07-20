@@ -263,14 +263,10 @@ class Settings:
         self.uButton.grid(row=11,column=2)
 
     def updateControl(self,event):
-##        print "Communities: ",Communities
-##        print "n1: ",n1
-##        print "n2: ",n2
-##        print "n3: ",n3
-##        print "n4: ",n4
         Network = self.variable.get()
         #print "Network: ",self.variable.get()
-        GenerateNetwork(Network,n1,n2,n3,n4)
+        self.nodes = [n1,n2,n3,n4]
+        GenerateNetwork(Network,Communities,self.nodes)
 
     def changeCommunities(self,event):
         global Communities

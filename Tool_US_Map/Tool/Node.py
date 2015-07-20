@@ -18,8 +18,10 @@ class Node:
         self.id=0
         self.links=[]
         self.toIds=[]
+        self.shape = ""
+        
         self.status=0
-        self.p=0
+        
         self.role = ""
         self.probability = ""
         self.color = ""

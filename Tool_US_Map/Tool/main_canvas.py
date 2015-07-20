@@ -12,10 +12,11 @@ from PolygonParts import PolygonPart
 from Node import Node
 
 # display parameters
-canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 800, 100, 100
+canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 950, 100, 100
 
 Gcanvas = ""
 GCoordinate = ""
+GNodesItemNo = []
 
 class MainCanvas(object):
     """
@@ -51,9 +52,9 @@ class MainCanvas(object):
         self.__createCanvas()
         
 
-        for i in range(len(self.CoordinateCollect)):
-            for j in range(len(self.CoordinateCollect[i].parts)):
-                print self.CoordinateCollect[i].id,len(self.CoordinateCollect[i].parts),j#self.CoordinateCollect[i].parts[j]
+##        for i in range(len(self.CoordinateCollect)):
+##            for j in range(len(self.CoordinateCollect[i].parts)):
+##                print self.CoordinateCollect[i].id,len(self.CoordinateCollect[i].parts),j#self.CoordinateCollect[i].parts[j]
          
     def __createCanvas(self):
         """
@@ -64,9 +65,24 @@ class MainCanvas(object):
         self.canvasRoot = self.root#Toplevel()#
         self.canvasRoot.title(self.attributeName)
         self.canvasRoot.lower(belowThis = self.root)
+
+
+        
         if Gcanvas == "":
-            self.mainCanvas = Canvas(self.canvasRoot, bg = 'black', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('-50c','-50c',"50c","50c"))
+            self.mainCanvas = Canvas(self.canvasRoot, bg = 'black', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
             Gcanvas = self.mainCanvas
+
+            #Scrollbar
+            hbar=Scrollbar(self.mainCanvas,orient=HORIZONTAL)
+            hbar.pack(side=BOTTOM,fill=X)
+            hbar.config(command=self.mainCanvas.xview)
+            vbar=Scrollbar(self.mainCanvas,orient=VERTICAL)
+            vbar.pack(side=RIGHT,fill=Y)
+            vbar.config(command=self.mainCanvas.yview)
+
+            self.mainCanvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
+            self.mainCanvas.pack(side=LEFT,expand=True,fill=BOTH)
+
         else:
             self.mainCanvas = Gcanvas
             self.mainCanvas.delete(ALL)
@@ -159,8 +175,8 @@ class MainCanvas(object):
             # loops through each point and calculate the window coordinates, put in xylist
             for point in polygon.points:
                 
-                pointx = int((point.x -minX)*ratio) + +margin_x/10#2#0.5
-                pointy = int((maxY- point.y)*ratio) + +margin_y/10#2#5
+                pointx = int((point.x -minX)*ratio) + +margin_x/0.5
+                pointy = int((maxY- point.y)*ratio) + +margin_y/5
                 xylist.append(pointx)
                 xylist.append(pointy)
             #print xylist
@@ -274,17 +290,33 @@ class MainCanvas(object):
 
 class GenerateNetwork(object):
 
-    def __init__(self,Network,nPoints1,nPoints2,nPoints3,nPoints4):
+    def __init__(self,Network,Communities,nodes):
 
-        global Gcanvas,GCoordinate
+        global Gcanvas,GCoordinate,GNodesItemNo
+        self.Communities = Communities
         self.canvas = Gcanvas
         self.Network = Network
-        self.nPoints = nPoints1+nPoints2+nPoints3+nPoints4
+        self.nodes = nodes
+        self.dnodes = nodes
+        self.nPoints = 0
+        
+        for i in range(self.Communities):
+            self.nPoints = self.nPoints + self.nodes[i]
+
+##        self.n1,self.n2,self.n3,self.n4 = self.nodes[0],self.nodes[1],self.nodes[2],self.nodes[3]
+        
+
+        if len(GNodesItemNo) <> 0 :
+            for iCount in GNodesItemNo:
+                Gcanvas.delete(iCount)
+
+        self.itemNo = []
         self.pAll = []
+        self.drawNode()
 
-        self.drawNode1()
+    def drawNode(self):
 
-    def drawNode1(self):
+        global GNodesItemNo
 
         if self.Network == "GenStar":
             print "GenStar is the network with points ",self.nPoints
@@ -297,21 +329,53 @@ class GenerateNetwork(object):
         if self.Network == "GenForestFire":
             print "GenForestFire is the netowork with points ",self.nPoints
             Graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
+
+        shape = 0
+        self.dnodes.reverse()
+        nodeCounter = self.dnodes.pop()
         
         for i in Graph.Nodes():
             self.node = Node()
             self.node.id = i.GetId()
-
+            
             for EI in Graph.Edges():
                 if EI.GetSrcNId() == i.GetId():
                         if EI.GetSrcNId() <> EI.GetDstNId() :
                             self.node.follower.append(EI.GetDstNId())
+            if shape ==0:
+                self.node.shape = "oval"
+            if shape ==1:
+                self.node.shape = "square"
+            if shape ==2:
+                self.node.shape = "rectangle"
+            if shape ==3:
+                self.node.shape = "circle"
+
+            nodeCounter = nodeCounter - 1
+            if nodeCounter <=0:
+                if len(self.dnodes)<> 0:
+                    nodeCounter = self.dnodes.pop()
+                shape = shape + 1
             
-            #print node.id, node.follower
             self.CoordinateSelection()
-            print self.node.x
-            _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="red",fill="green", width=2)
+
+            if self.node.shape == "oval":
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="green",fill="green", width=2)
+
+            if self.node.shape == "square":
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="red",fill="red", width=2)
+
+            if self.node.shape == "rectangle":
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="yellow",fill="yellow", width=2)
+
+            if self.node.shape == "circle":
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="white",fill="white", width=2)
+
+            self.itemNo.append(_Oval)
             self.pAll.append(self.node)
+
+            
+        GNodesItemNo = self.itemNo
             
     def CoordinateSelection(self):
         PolyPart = rd.randrange(len(GCoordinate))
@@ -323,7 +387,8 @@ class GenerateNetwork(object):
 
         tempXlist = []
         tempYlist = []
-        
+
+                        
         for i in range(0,len(tempXYlist),2):
             tempXlist.append(tempXYlist[i])
             tempYlist.append(tempXYlist[i+1])
@@ -343,16 +408,14 @@ class GenerateNetwork(object):
         tempVar = False
         i = 0
         while not tempVar:
-         #   print "Not Got"
             xPoint = rd.randrange(xMin,xMax)
             yPoint = rd.randrange(yMin,yMax)
             tempVar =  point_inside_polygon(xPoint,yPoint,tempXYlist)
             i = i+1
             if i >25:
-                print xMin,xMax,yMin,yMax
+##                print xMin,xMax,yMin,yMax
                 break
-
-        #print "Got Points"
+            
         self.node.x = xPoint
         self.node.y = yPoint
         
