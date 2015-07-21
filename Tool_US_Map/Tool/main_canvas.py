@@ -2,7 +2,6 @@
 the canvas to draw the shapefile and interaction with mouse clicks
 """
 from Tkinter import *
-#from Tkinter import Toplevel, Canvas
 from shp_reader import SHP_TYPE_POINT,SHP_TYPE_LINE,SHP_TYPE_POLYGON,Polygon
 
 import random as rd
@@ -239,12 +238,12 @@ class MainCanvas(object):
                 
                 
                 if area > 0:
-                    
-                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="blue",fill="#86aba3",outline="blue",tags = self.datalist[tag_count])#creating our polygon outline
+                    color = rd.choice(["#b75454","#c97f7f","#ae3f3f"])#(["#acdcd1","#86aba3","#607a74"])
+                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=color,outline="black",tags = self.datalist[tag_count])#creating our polygon outline
                     
                 else:
                     # If it is a hole, fill with the same color as the canvas background color 
-                    _polygon = self.mainCanvas.create_polygon(tempXYlist,fill="black",outline="black", tags = self.datalist[tag_count])
+                    _polygon = self.mainCanvas.create_polygon(tempXYlist,fill="white",outline="white", tags = self.datalist[tag_count])
                 self.mainCanvas.tag_bind( _polygon, '<ButtonPress-1>', self.__showAttriInfo)
             self.CoordinateCollect.append(self.PolyInfo)
             tag_count += 1
@@ -333,17 +332,17 @@ class GenerateNetwork(object):
             self.CoordinateSelection()
             self.Radius = 10
             if self.node.shape == "oval":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="green",fill="green", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="green",fill="#2dbdfc", width=2)
 
             if self.node.shape == "triangle":
                 traingle = [self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius]
-                _Oval = Gcanvas.create_oval(traingle,outline="red",fill="yellow", width=2)
+                _Oval = Gcanvas.create_oval(traingle,outline="red",fill="#5ec39d", width=2)
 
             if self.node.shape == "rectangle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="yellow",fill="yellow", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="yellow",fill="#7081ff", width=2)
 
             if self.node.shape == "circle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="white",fill="white", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="white",fill="#1b7197", width=2)
 
             self.OvalNo[_Oval]=self.node.id#[self.node.x,self.node.y]
             Gcanvas.tag_bind( _Oval, '<ButtonPress-1>', self.__showAttriInfo)
@@ -457,7 +456,8 @@ class GenerateNetwork(object):
                     widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[j].id)]
                     Gcanvas.itemconfig(widgetId,state="normal")
                     
-                    _line=Gcanvas.create_line(Node1.x+5,Node1.y+5,Node2.x+5,Node2.y+5,arrow="last",fill="red")
+                    _line=Gcanvas.create_line(Node1.x+5,Node1.y+5,Node2.x+5,Node2.y+5,arrow="last",fill="black",width=3)
+                    self.itemNo.append(_line)
                     self.LineNo.append(_line)
                 GNodesItemNo = self.itemNo
                 break
