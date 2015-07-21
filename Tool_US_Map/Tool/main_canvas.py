@@ -7,7 +7,6 @@ from shp_reader import SHP_TYPE_POINT,SHP_TYPE_LINE,SHP_TYPE_POLYGON,Polygon
 
 import random as rd
 import snap
-from sag1 import point_inside_polygon
 from PolygonParts import PolygonPart
 from Node import Node
 
@@ -69,7 +68,7 @@ class MainCanvas(object):
 
         
         if Gcanvas == "":
-            self.mainCanvas = Canvas(self.canvasRoot, bg = 'black', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
+            self.mainCanvas = Canvas(self.canvasRoot, bg = 'white', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
             Gcanvas = self.mainCanvas
 
             #Scrollbar
@@ -232,23 +231,23 @@ class MainCanvas(object):
 
                 self.PolyInfo.parts[k]=tempXYlist
                 
-                xMax = max(tempXlist)
-                xMin = min(tempXlist)
-
-                yMax = max(tempYlist)
-                yMin = min(tempYlist)
-
-                if xMax == xMin:
-                    xMin = xMax - 1
-
-                if yMax == yMin:
-                    yMin = yMax - 1
-
-                tempVar = False
-                #while not tempVar:
-                xPoint = rd.randrange(xMin,xMax)
-                yPoint = rd.randrange(yMin,yMax)
-                tempVar =  point_inside_polygon(xPoint,yPoint,tempXYlist)
+##                xMax = max(tempXlist)
+##                xMin = min(tempXlist)
+##
+##                yMax = max(tempYlist)
+##                yMin = min(tempYlist)
+##
+##                if xMax == xMin:
+##                    xMin = xMax - 1
+##
+##                if yMax == yMin:
+##                    yMin = yMax - 1
+##
+##                tempVar = False
+##                #while not tempVar:
+##                xPoint = rd.randrange(xMin,xMax)
+##                yPoint = rd.randrange(yMin,yMax)
+##                tempVar =  point_inside_polygon(xPoint,yPoint,tempXYlist)
                 
                 
                 startIndex = polygon.partsIndex[k] #start index for our positive polygon.                
@@ -257,12 +256,14 @@ class MainCanvas(object):
                 area = newPolygon.getArea() # Calculate the area
                 
                 #Sagar Jha center added to calculate centroid of polygon
-                center = newPolygon.getCentroid()
-                xCenter = int((center.x -minX)*ratio) + +margin_x/0.5
-                yCenter = int((maxY- center.y)*ratio) + +margin_y/5
+##                center = newPolygon.getCentroid()
+##                xCenter = int((center.x -minX)*ratio) + +margin_x/0.5
+##                yCenter = int((maxY- center.y)*ratio) + +margin_y/5
                 
                 if area > 0:
-                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="blue",fill=polygon.color,outline="blue",tags = self.datalist[tag_count])#creating our polygon outline
+                    #86aba3
+                    #polygon.color
+                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="blue",fill="#86aba3",outline="blue",tags = self.datalist[tag_count])#creating our polygon outline
                     
 ##                    if k==0:
 ##                        _oval    = self.mainCanvas.create_oval(xCenter, yCenter,xCenter +5,yCenter+ 5, outline="red",fill="green", width=2,tags = center)
@@ -298,21 +299,20 @@ class GenerateNetwork(object):
         self.Network = Network
         self.nodes = nodes
         self.dnodes = nodes
+        self.Hidden = False
         self.nPoints = 0
         self.OvalNo ={}
+        self.LineNo = []
+        self.itemNo = []
+        self.pAll = []
         
         for i in range(self.Communities):
             self.nPoints = self.nPoints + self.nodes[i]
-
-##        self.n1,self.n2,self.n3,self.n4 = self.nodes[0],self.nodes[1],self.nodes[2],self.nodes[3]
-        
 
         if len(GNodesItemNo) <> 0 :
             for iCount in GNodesItemNo:
                 Gcanvas.delete(iCount)
 
-        self.itemNo = []
-        self.pAll = []
         self.drawNode()
 
     def drawNode(self):
@@ -346,7 +346,7 @@ class GenerateNetwork(object):
             if shape ==0:
                 self.node.shape = "oval"
             if shape ==1:
-                self.node.shape = "square"
+                self.node.shape = "triangle"
             if shape ==2:
                 self.node.shape = "rectangle"
             if shape ==3:
@@ -359,18 +359,19 @@ class GenerateNetwork(object):
                 shape = shape + 1
             
             self.CoordinateSelection()
-
+            self.Radius = 10
             if self.node.shape == "oval":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="green",fill="green", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="green",fill="green", width=2)
 
-            if self.node.shape == "square":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="red",fill="red", width=2)
+            if self.node.shape == "triangle":
+                traingle = [self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius]
+                _Oval = Gcanvas.create_oval(traingle,outline="red",fill="yellow", width=2)
 
             if self.node.shape == "rectangle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="yellow",fill="yellow", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="yellow",fill="yellow", width=2)
 
             if self.node.shape == "circle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+5,self.node.y+5,outline="white",fill="white", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="white",fill="white", width=2)
 
             self.OvalNo[_Oval]=self.node.id#[self.node.x,self.node.y]
             Gcanvas.tag_bind( _Oval, '<ButtonPress-1>', self.__showAttriInfo)
@@ -413,7 +414,7 @@ class GenerateNetwork(object):
         while not tempVar:
             xPoint = rd.randrange(xMin,xMax)
             yPoint = rd.randrange(yMin,yMax)
-            tempVar =  point_inside_polygon(xPoint,yPoint,tempXYlist)
+            tempVar =  self.point_inside_polygon(xPoint,yPoint,tempXYlist)
             i = i+1
             if i >25:
 ##                print xMin,xMax,yMin,yMax
@@ -422,6 +423,30 @@ class GenerateNetwork(object):
         self.node.x = xPoint
         self.node.y = yPoint
 
+    def point_inside_polygon(self,x,y,poly):
+        
+        n = len(poly)/2
+        inside =False
+
+        p1x = poly[0]
+        p1y = poly[1]
+        #print p1x,p1y
+        for i in range(0,n+1,1):
+            p2x = poly [(i%n)*2]
+            p2y = poly [(i%n)*2 +1]
+    ##        p2x,p2y = poly[i % n]
+    ##        print i,i%n,p2x,p2y
+            if y > min(p1y,p2y):
+                if y <= max(p1y,p2y):
+                    if x <= max(p1x,p2x):
+                        if p1y != p2y:
+                            xinters = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                        if p1x == p2x or x <= xinters:
+                            inside = not inside
+            p1x,p1y = p2x,p2y
+
+        return inside
+
     def __showAttriInfo(self,event):
         """
         Show attribute information of clicked unit
@@ -429,29 +454,43 @@ class GenerateNetwork(object):
         widget_id=event.widget.find_closest(event.x, event.y)
 
         NodeId = self.OvalNo[widget_id[0]]
-        #print "Nodeid ",self.OvalNo[widget_id[0]]
 
+        if len(self.LineNo) <> 0:
+            for i in self.LineNo:
+                Gcanvas.delete(i)
+
+        if self.Hidden:
+            for i in range(len(self.pAll)):
+                widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
+                Gcanvas.itemconfig(widgetId,state="normal")
+                self.Hidden = False
+        else:
+            for i in range(len(self.pAll)):
+                widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
+                Gcanvas.itemconfig(widgetId,state="hidden")
+            self.Hidden = True
+            
         for i in range(len(self.pAll)):
+            
             if self.pAll[i].id == NodeId:
-                print "NodeId: ",NodeId," ---->",self.pAll[i].follower
+                #print "NodeId: ",NodeId," ---->",self.pAll[i].follower
                 Node1 = self.pAll[i]
 
+                widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
+                Gcanvas.itemconfig(widgetId,state="normal")
+                
                 for j in self.pAll[i].follower:
                     Node2 = self.pAll[j]
-                    _line=Gcanvas.create_line(Node1.x,Node1.y,Node2.x,Node2.y,fill="red")
-                    self.itemNo.append(_line)
+                    
+                    widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[j].id)]
+                    Gcanvas.itemconfig(widgetId,state="normal")
+                    
+                    _line=Gcanvas.create_line(Node1.x+5,Node1.y+5,Node2.x+5,Node2.y+5,arrow="last",fill="red")
+                    self.LineNo.append(_line)
                 GNodesItemNo = self.itemNo
-        
+                break
 
 
 
-
-
-
-
-
-        
-        
-    
         
         

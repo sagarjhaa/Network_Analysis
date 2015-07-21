@@ -8,16 +8,14 @@ Created on March 17, 2015
 
 from   Tkinter import *
 from   shp_reader import SHP_TYPE_POINT,SHP_TYPE_LINE,SHP_TYPE_POLYGON,Polygon
+from   main_canvas import MainCanvas,GenerateNetwork
 import Tkconstants
 import tkFileDialog
 import shp_reader
 import random as rd
 import dbfload as dbf
+import Tkinter as tk  #For the setting
 
-#import main_canvas as MainCanvas
-from main_canvas import MainCanvas,GenerateNetwork
-
-import Tkinter as tk  #For the setting 
 
 Communities = 1
 n1,n2,n3,n4 = 1,1,1,1
@@ -329,38 +327,6 @@ class Settings:
     def changeRadius(self,event):
         global Radius
         Radius = event.widget.get()
-
-def point_inside_polygon(x,y,poly):
-    n = len(poly)/2
-    inside =False
-
-    p1x = poly[0]
-    p1y = poly[1]
-    
-    for i in range(0,n+1,1):
-        p2x = poly [(i%n)*2]
-        p2y = poly [(i%n)*2 +1]
-        if y > min(p1y,p2y):
-            if y <= max(p1y,p2y):
-                if x <= max(p1x,p2x):
-                    if p1y != p2y:
-                        xinters = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
-                    if p1x == p2x or x <= xinters:
-                        inside = not inside
-        p1x,p1y = p2x,p2y
-    return inside
-
- 
-##root=Tk()
-###root.minsize=(1000,900)
-###root.attributes('-fullscreen',True)  #It will hide the title bar but open in maximized mode
-##w,h = root.winfo_screenwidth(),root.winfo_screenheight()  #It gives screen widht and height
-##
-##root.state('zoomed')
-##root.geometry=("1000x900+0+0")
-##
-##NG=Network(root)
-##root.mainloop()
 
 
 if __name__ == '__main__':
