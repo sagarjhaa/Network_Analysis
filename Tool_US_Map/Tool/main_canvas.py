@@ -178,7 +178,7 @@ class MainCanvas(object):
                 pointy = int((maxY- point.y)*ratio) + +margin_y/5
                 xylist.append(pointx)
                 xylist.append(pointy)
-            #print xylist
+    
             """
             polyline.partsIndex is a tuple data type holding the starting points for each
             part. For example, if the polyline.partsIndex of a polyline equals to (0, 4, 9),
@@ -231,49 +231,21 @@ class MainCanvas(object):
 
                 self.PolyInfo.parts[k]=tempXYlist
                 
-##                xMax = max(tempXlist)
-##                xMin = min(tempXlist)
-##
-##                yMax = max(tempYlist)
-##                yMin = min(tempYlist)
-##
-##                if xMax == xMin:
-##                    xMin = xMax - 1
-##
-##                if yMax == yMin:
-##                    yMin = yMax - 1
-##
-##                tempVar = False
-##                #while not tempVar:
-##                xPoint = rd.randrange(xMin,xMax)
-##                yPoint = rd.randrange(yMin,yMax)
-##                tempVar =  point_inside_polygon(xPoint,yPoint,tempXYlist)
-                
                 
                 startIndex = polygon.partsIndex[k] #start index for our positive polygon.                
                 tempPoints = polygon.points[startIndex: endPointIndex]#we get our temppoints to help use create our polygon using positive data
                 newPolygon = Polygon(tempPoints) #here we create our polygons using positve data
                 area = newPolygon.getArea() # Calculate the area
                 
-                #Sagar Jha center added to calculate centroid of polygon
-##                center = newPolygon.getCentroid()
-##                xCenter = int((center.x -minX)*ratio) + +margin_x/0.5
-##                yCenter = int((maxY- center.y)*ratio) + +margin_y/5
                 
                 if area > 0:
-                    #86aba3
-                    #polygon.color
+                    
                     _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="blue",fill="#86aba3",outline="blue",tags = self.datalist[tag_count])#creating our polygon outline
                     
-##                    if k==0:
-##                        _oval    = self.mainCanvas.create_oval(xCenter, yCenter,xCenter +5,yCenter+ 5, outline="red",fill="green", width=2,tags = center)
-##                        self.OvalNo[_oval]=[center.x,center.y]
-
                 else:
                     # If it is a hole, fill with the same color as the canvas background color 
                     _polygon = self.mainCanvas.create_polygon(tempXYlist,fill="black",outline="black", tags = self.datalist[tag_count])
                 self.mainCanvas.tag_bind( _polygon, '<ButtonPress-1>', self.__showAttriInfo)
-##                self.mainCanvas.tag_bind( _oval, '<ButtonPress-1>', self.__showAttriInfo)
             self.CoordinateCollect.append(self.PolyInfo)
             tag_count += 1
             
