@@ -182,7 +182,7 @@ def read_shx(shp_file_path):
     s = shxFile.read(72)
     # convert into values
     header = struct.unpack("<iidddddddd",s)
-    # get bounding box for the shape file 
+    # get bounding box for the shape file
     bbox = header[2],header[3],header[4],header[5]
     # define an empty list for holding offset of each feature in main file
     recordsOffset = []

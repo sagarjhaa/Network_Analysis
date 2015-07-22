@@ -63,8 +63,6 @@ class MainCanvas(object):
         self.canvasRoot = self.root#Toplevel()#
         self.canvasRoot.title(self.attributeName)
         self.canvasRoot.lower(belowThis = self.root)
-
-
         
         if Gcanvas == "":
             self.mainCanvas = Canvas(self.canvasRoot, bg = 'white', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
@@ -172,9 +170,9 @@ class MainCanvas(object):
             
             # loops through each point and calculate the window coordinates, put in xylist
             for point in polygon.points:
-                
                 pointx = int((point.x -minX)*ratio) + +margin_x/0.5
                 pointy = int((maxY- point.y)*ratio) + +margin_y/5
+                
                 xylist.append(pointx)
                 xylist.append(pointy)
     
@@ -284,7 +282,11 @@ class GenerateNetwork(object):
             for iCount in GNodesItemNo:
                 Gcanvas.delete(iCount)
 
-        self.drawNode()
+        #Check 1 if no shape file is selected
+        if Gcanvas == "":
+            print "Please select a shape file!!!"
+        else:
+            self.drawNode()
 
     def drawNode(self):
 
@@ -332,17 +334,17 @@ class GenerateNetwork(object):
             self.CoordinateSelection()
             self.Radius = 10
             if self.node.shape == "oval":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="green",fill="#2dbdfc", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="#ff00ff",fill="#ff00ff", width=2)
 
             if self.node.shape == "triangle":
                 traingle = [self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius]
-                _Oval = Gcanvas.create_oval(traingle,outline="red",fill="#5ec39d", width=2)
+                _Oval = Gcanvas.create_oval(traingle,outline="#474bcc",fill="#474bcc", width=2)
 
             if self.node.shape == "rectangle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="yellow",fill="#7081ff", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="#4bcc47",fill="#4bcc47", width=2)
 
             if self.node.shape == "circle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="white",fill="#1b7197", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="#5b7a7a",fill="#5b7a7a", width=2)
 
             self.OvalNo[_Oval]=self.node.id#[self.node.x,self.node.y]
             Gcanvas.tag_bind( _Oval, '<ButtonPress-1>', self.__showAttriInfo)
