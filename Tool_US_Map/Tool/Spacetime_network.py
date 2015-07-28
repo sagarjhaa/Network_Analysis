@@ -16,11 +16,38 @@ import random as rd
 import dbfload as dbf
 import Tkinter as tk  #For the setting
 
+import nltk as nltk
+
 
 Communities = 1
 n1,n2,n3,n4 = 1,1,1,1
 p1,p2,p3,p4 = 0,0,0,0
 l1,l2,l3,l4 = 0,0,0,0
+
+class popupWindow(object):
+    def __init__(self,master):
+        top=self.top=Toplevel(master)
+        self.top.title("Please Enter Your Choice")
+        self.l=Label(top,text="What would you like to do today?")
+        self.l.pack()
+        self.l=Label(top,text="For Simulation choose Yes and to import twitter data choose No")
+        self.l.pack()
+
+        self.Choice = StringVar(self.top)
+        self.Choice.set("Yes")
+        self.options = OptionMenu(self.top,self.Choice,"Yes","No")
+        self.options.pack()
+
+        self.b=Button(top,text='Ok',command=self.cleanup)
+        self.b.pack()
+
+        self.top.grab_set_global()
+
+    def findValue(self):
+        return self.Choice.get()
+        
+    def cleanup(self):
+        self.top.destroy()    
 
 class Network:
 
@@ -29,6 +56,7 @@ class Network:
         self.root = Tk()
         self.root.state("zoomed")
         self.root.title("Network Simulator")
+        self.simulatorChoice()
         self.createMenu()
         self.root.mainloop()
 
@@ -47,12 +75,29 @@ class Network:
         
         self.attibmenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Attibutes", menu=self.attibmenu,state='disabled')
-        self.menubar.add_cascade(label="Settings", command = self.onClick)
+
+        if self.pop.options:
+            self.menubar.add_cascade(label="Settings", command = self.onClick)
+            
         self.root.config(menu=self.menubar)
 
+
+    def simulatorChoice(self):
+        '''
+        Create popup for choice to go to Simulation or Real Twitter Data
+        '''
+        self.pop = popupWindow(self.root)
+        self.root.wait_window(self.pop.top)
+
+        if self.pop.findValue() == "Yes":
+            self.pop.options = True
+        else:
+            self.pop.options = False
+        
+
     def onClick(self):
-        inputDialog = Settings(self.root)
-        self.root.wait_window(inputDialog.top)    
+        self.inputDialog = Settings(self.root)
+        self.root.wait_window(self.inputDialog.top)    
 
     def __openShpfile(self):
         """
@@ -69,7 +114,6 @@ class Network:
         self.shapes, self.shp_type, self.bbox = shp_reader.read_shp(directory)
         #read corresponding dbf data
         dbfFile = dbf.DbfLoader(directory[:-3] + "dbf")
-        
         t = dbfFile.table2list()
         varNames = dbfFile.get_field_names()
         variables = {}
@@ -85,14 +129,13 @@ class Network:
         
         self.dbfdata = variables
         self.menubar.entryconfig(2, state=Tkconstants.NORMAL)
-        #self.__updateCanvas("STATE_NAME")
     
     def __addAttribute(self,attributeName):
         """
         Add an attribute to the menu
         """
         self.attibmenu.add_command(label=attributeName, command=lambda i=attributeName:self.__updateCanvas(i))
-
+        
     def __updateCanvas(self, attributeName):
         """
         Updates the canvas and showing statistical information
@@ -103,8 +146,17 @@ class Network:
         self.root.grid()
         self.root.rowconfigure(0,weight=1)
         self.root.columnconfigure(0,weight=1)
-        self.canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,attributeName,self.datalist)
-        
+
+        if self.pop.options:
+            self.canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,attributeName,self.datalist)
+
+        else:            
+            if (not hasattr(self, 'canvas')) or self.canvas == None:
+                self.canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,attributeName,self.datalist) 
+            else:
+                self.canvas.addLayer(self.shapes, self.shp_type, attributeName,self.datalist)
+                self.canvas = None
+     
     
 class Settings:
     def __init__(self, parent):
@@ -131,7 +183,7 @@ class Settings:
         self.column = self.column - 1
         self.spinbox_Label= tk.Label(top,text='Nodes 1: ')
         self.spinbox_Label.grid(row=self.row, column=self.column,sticky=W+S)
-        self.No_Nodes_Scale1 = tk.Scale(top,from_=1, to=200,orient=HORIZONTAL,length=200)
+        self.No_Nodes_Scale1 = tk.Scale(top,from_=1, to=400,orient=HORIZONTAL,length=200)
         self.No_Nodes_Scale1.set(n1)
 
         self.column = self.column + 1
@@ -169,7 +221,7 @@ class Settings:
         self.spinbox_Label2.grid(row=self.row, column=self.column,sticky=W+S)
 
         self.column = self.column + 1
-        self.No_Nodes_Scale2 = tk.Scale(top,from_=1, to=200,orient=HORIZONTAL,length=200)
+        self.No_Nodes_Scale2 = tk.Scale(top,from_=1, to=400,orient=HORIZONTAL,length=200)
         self.No_Nodes_Scale2.set(n2)
         self.No_Nodes_Scale2.bind("<ButtonRelease-1>",self.changeNodes_n2)
         self.No_Nodes_Scale2.grid(row=self.row,column=self.column)
@@ -205,7 +257,7 @@ class Settings:
         self.spinbox_Label3.grid(row=self.row, column=self.column,sticky=W+S)
 
         self.column = self.column + 1
-        self.No_Nodes_Scale3 = tk.Scale(top,from_=1, to=200,orient=HORIZONTAL,length=200)
+        self.No_Nodes_Scale3 = tk.Scale(top,from_=1, to=400,orient=HORIZONTAL,length=200)
         self.No_Nodes_Scale3.set(n3)
         self.No_Nodes_Scale3.bind("<ButtonRelease-1>",self.changeNodes_n3)
         self.No_Nodes_Scale3.grid(row=self.row,column=self.column)
@@ -241,7 +293,7 @@ class Settings:
         self.spinbox_Label4.grid(row=self.row, column=self.column,sticky=W+S)
 
         self.column = self.column + 1
-        self.No_Nodes_Scale4 = tk.Scale(top,from_=1, to=200,orient=HORIZONTAL,length=200)
+        self.No_Nodes_Scale4 = tk.Scale(top,from_=1, to=400,orient=HORIZONTAL,length=200)
         self.No_Nodes_Scale4.set(n4)
         self.No_Nodes_Scale4.bind("<ButtonRelease-1>",self.changeNodes_n4)
         self.No_Nodes_Scale4.grid(row=self.row,column=self.column)

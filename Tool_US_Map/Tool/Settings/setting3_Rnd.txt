@@ -1,0 +1,12 @@
+Communities:1
+
+Node 1 :1
+
+Node 2 :1
+
+Node 3 :100
+
+Node 4 :1
+
+Network:GenRndGnm
+

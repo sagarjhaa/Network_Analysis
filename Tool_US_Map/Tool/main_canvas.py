@@ -53,14 +53,23 @@ class MainCanvas(object):
 ##        for i in range(len(self.CoordinateCollect)):
 ##            for j in range(len(self.CoordinateCollect[i].parts)):
 ##                print self.CoordinateCollect[i].id,len(self.CoordinateCollect[i].parts),j#self.CoordinateCollect[i].parts[j]
-         
+
+    def addLayer(self,shapes,shp_type,attributeName,datalist):
+        self.shapes = shapes
+        self.shp_type = shp_type
+        self.attributeName = attributeName
+        self.datalist = datalist
+        
+        self.__drawShape(shapes,datalist, self.bbox,shp_type)
+
+        
     def __createCanvas(self):
         """
         Create the canvas and draw all the spatial objects
         """
         
         global Gcanvas,GCoordinate
-        self.canvasRoot = self.root#Toplevel()#
+        self.canvasRoot =self.root# Toplevel()#
         self.canvasRoot.title(self.attributeName)
         self.canvasRoot.lower(belowThis = self.root)
         
@@ -83,14 +92,15 @@ class MainCanvas(object):
             self.mainCanvas = Gcanvas
             self.mainCanvas.delete(ALL)
         
-        self.__drawShape()
+        self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
         GCoordinate = self.CoordinateCollect
         self.mainCanvas.pack()
         
-    def __drawShape(self):
+    def __drawShape(self,shapes,datalist,bbox,shp_type):
         """ 
         Draw all the spatial objects on the canvas
         """
+
         minX, minY, maxX, maxY = self.bbox[0],self.bbox[1],self.bbox[2],self.bbox[3]
         # calculate ratios of visualization
         ratiox = canvasWidth/(maxX-minX)
@@ -100,24 +110,24 @@ class MainCanvas(object):
         if ratio>ratioy:
             ratio = ratioy
         
-        if self.shp_type == SHP_TYPE_POINT:
+        if shp_type == SHP_TYPE_POINT:
             self.__drawPoints(minX, minY, maxX, maxY, ratio)
-        elif self.shp_type == SHP_TYPE_LINE:
+        elif shp_type == SHP_TYPE_LINE:
             self.__drawPolylines(minX, minY, maxX, maxY, ratio)
-        elif self.shp_type == SHP_TYPE_POLYGON:
+        elif shp_type == SHP_TYPE_POLYGON:
             self.__drawPolygons(minX, minY, maxX, maxY, ratio)
       
     def __drawPoints(self,minX, minY, maxX, maxY,ratio):
         """
         Draw points on the canvas
-        """  
+        """
         tag_count = 0
         # loop through each point
         for point in self.shapes:
             #define an empty xylist for holding converted coordinates
             x = int((point.x-minX)*ratio)+margin_x/2
             y = int((maxY-point.y)*ratio)+margin_y/2
-            _point = self.mainCanvas.create_oval(x-2, y-2, x+2, y+2,outline=point.color,  
+            _point = self.mainCanvas.create_oval(x-2, y-2, x+2, y+2,outline=point.outline,  
                                fill=point.color, width=2, tags = self.datalist[tag_count])
             self.mainCanvas.tag_bind( _point, '<ButtonPress-1>', self.__showAttriInfo)
             tag_count += 1
@@ -170,8 +180,8 @@ class MainCanvas(object):
             
             # loops through each point and calculate the window coordinates, put in xylist
             for point in polygon.points:
-                pointx = int((point.x -minX)*ratio) + +margin_x/0.5
-                pointy = int((maxY- point.y)*ratio) + +margin_y/5
+                pointx = int((point.x -minX)*ratio) + +margin_x/2
+                pointy = int((maxY- point.y)*ratio) + +margin_y/2
                 
                 xylist.append(pointx)
                 xylist.append(pointy)
@@ -236,7 +246,7 @@ class MainCanvas(object):
                 
                 
                 if area > 0:
-                    color = rd.choice(["#b75454","#c97f7f","#ae3f3f"])#(["#acdcd1","#86aba3","#607a74"])
+                    color = rd.choice(["#e2baba","#be6565","#deb2b2"])#(["#acdcd1","#86aba3","#607a74"])
                     _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=color,outline="black",tags = self.datalist[tag_count])#creating our polygon outline
                     
                 else:
@@ -329,22 +339,26 @@ class GenerateNetwork(object):
             if nodeCounter <=0:
                 if len(self.dnodes)<> 0:
                     nodeCounter = self.dnodes.pop()
+                    print "Completed Community: ",shape
                 shape = shape + 1
             
             self.CoordinateSelection()
-            self.Radius = 10
+            self.Radius = 5
             if self.node.shape == "oval":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="#ff00ff",fill="#ff00ff", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
+                                            self.node.y+self.Radius,outline="#ff00ff",fill="#ff00ff", width=2)
 
             if self.node.shape == "triangle":
                 traingle = [self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius]
-                _Oval = Gcanvas.create_oval(traingle,outline="#474bcc",fill="#474bcc", width=2)
+                _Oval = Gcanvas.create_oval(traingle,outline="#252568",fill="#252568", width=2)
 
             if self.node.shape == "rectangle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="#4bcc47",fill="#4bcc47", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
+                                            self.node.y+self.Radius,outline="#4bcc47",fill="#4bcc47", width=2)
 
             if self.node.shape == "circle":
-                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius,outline="#5b7a7a",fill="#5b7a7a", width=2)
+                _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
+                                            self.node.y+self.Radius,outline="#364949",fill="#364949", width=2)
 
             self.OvalNo[_Oval]=self.node.id#[self.node.x,self.node.y]
             Gcanvas.tag_bind( _Oval, '<ButtonPress-1>', self.__showAttriInfo)
@@ -426,45 +440,44 @@ class GenerateNetwork(object):
         """        
         widget_id=event.widget.find_closest(event.x, event.y)
 
-        NodeId = self.OvalNo[widget_id[0]]
+        try:
+            NodeId = self.OvalNo[widget_id[0]]
 
-        if len(self.LineNo) <> 0:
-            for i in self.LineNo:
-                Gcanvas.delete(i)
+            if len(self.LineNo) <> 0:
+                for i in self.LineNo:
+                    Gcanvas.delete(i)
 
-        if self.Hidden:
-            for i in range(len(self.pAll)):
-                widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
-                Gcanvas.itemconfig(widgetId,state="normal")
-                self.Hidden = False
-        else:
-            for i in range(len(self.pAll)):
-                widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
-                Gcanvas.itemconfig(widgetId,state="hidden")
-            self.Hidden = True
-            
-        for i in range(len(self.pAll)):
-            
-            if self.pAll[i].id == NodeId:
-                #print "NodeId: ",NodeId," ---->",self.pAll[i].follower
-                Node1 = self.pAll[i]
-
-                widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
-                Gcanvas.itemconfig(widgetId,state="normal")
+            if self.Hidden:
+                for i in range(len(self.pAll)):
+                    widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
+                    Gcanvas.itemconfig(widgetId,state="normal")
+                    self.Hidden = False
+            else:
+                for i in range(len(self.pAll)):
+                    widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
+                    Gcanvas.itemconfig(widgetId,state="hidden")
+                self.Hidden = True
                 
-                for j in self.pAll[i].follower:
-                    Node2 = self.pAll[j]
-                    
-                    widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[j].id)]
+            for i in range(len(self.pAll)):
+                
+                if self.pAll[i].id == NodeId:
+                    #print "NodeId: ",NodeId," ---->",self.pAll[i].follower
+                    Node1 = self.pAll[i]
+
+                    widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
                     Gcanvas.itemconfig(widgetId,state="normal")
                     
-                    _line=Gcanvas.create_line(Node1.x+5,Node1.y+5,Node2.x+5,Node2.y+5,arrow="last",fill="black",width=3)
-                    self.itemNo.append(_line)
-                    self.LineNo.append(_line)
-                GNodesItemNo = self.itemNo
-                break
+                    for j in self.pAll[i].follower:
+                        Node2 = self.pAll[j]
+                        
+                        widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[j].id)]
+                        Gcanvas.itemconfig(widgetId,state="normal")
+                        
+                        _line=Gcanvas.create_line(Node1.x+5,Node1.y+5,Node2.x+5,Node2.y+5,arrow="last",fill="black",width=3)
+                        self.itemNo.append(_line)
+                        self.LineNo.append(_line)
+                    GNodesItemNo = self.itemNo
+                    break
+        except:
+            print "Please click again on the oval"
 
-
-
-        
-        
