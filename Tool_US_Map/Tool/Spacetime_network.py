@@ -17,7 +17,7 @@ import dbfload as dbf
 import Tkinter as tk  #For the setting
 
 import nltk as nltk
-
+from  textAnalysis import analysisWidget
 
 Communities = 1
 n1,n2,n3,n4 = 1,1,1,1
@@ -77,7 +77,9 @@ class Network:
         self.menubar.add_cascade(label="Attibutes", menu=self.attibmenu,state='disabled')
 
         if self.pop.options:
-            self.menubar.add_cascade(label="Settings", command = self.onClick)
+            self.menubar.add_cascade(label="Settings", state='disable',command = self.onClick)
+        else:
+            self.menubar.add_cascade(label="Analysis", state='disable',command = self.textAnalysis)
             
         self.root.config(menu=self.menubar)
 
@@ -97,7 +99,43 @@ class Network:
 
     def onClick(self):
         self.inputDialog = Settings(self.root)
-        self.root.wait_window(self.inputDialog.top)    
+        self.root.wait_window(self.inputDialog.top)
+
+    def textAnalysis(self):
+        '''
+        Process the text from the twitter file and analysed using NLTK
+        '''
+
+        '''
+        Preparing data from sting to text format to used it with functions from NLTK
+        '''
+        self.datalist=self.dbfdata["text"]
+        self.data_list = []
+        temp = []
+        for i in range(len(self.datalist)):
+            temp.append(self.datalist[i])
+            self.data_list.append(temp)
+            temp = []
+
+        
+        tw=[]
+        itemp  = len(self.data_list)
+        for i in range(itemp):
+            temp_list = ",".join(self.data_list[i])
+            tw.append(temp_list)
+
+        wlist = []
+        for item in tw:
+            words = item.split(" ")
+            for word in words:
+                wlist.append(word)
+
+        
+        text = nltk.Text(wlist)
+
+        a = analysisWidget(self.root,text)
+
+
 
     def __openShpfile(self):
         """
@@ -129,6 +167,7 @@ class Network:
         
         self.dbfdata = variables
         self.menubar.entryconfig(2, state=Tkconstants.NORMAL)
+        self.menubar.entryconfig(3, state=Tkconstants.NORMAL)
     
     def __addAttribute(self,attributeName):
         """
