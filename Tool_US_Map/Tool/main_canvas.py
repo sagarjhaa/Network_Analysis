@@ -297,6 +297,7 @@ class GenerateNetwork(object):
             print "Please select a shape file!!!"
         else:
             self.drawNode()
+            self.diffusion()
 
     def drawNode(self):
 
@@ -433,6 +434,52 @@ class GenerateNetwork(object):
             p1x,p1y = p2x,p2y
 
         return inside
+
+    def diffusion(self):
+
+        completed_nodes = []
+        uncomplete_nodes = []
+
+        initialNode  = rd.choice(self.pAll)
+
+##        print "initialNode id: ",initialNode.id
+##        print "Index No: ",self.pAll.index(initialNode)
+
+        completed_nodes.append(initialNode.id)
+        for i in range(len(initialNode.follower)):
+            
+##            print "Follower id: ",self.pAll[initialNode.follower[i]].id
+##            print "Index No: ",self.pAll.index(self.pAll[initialNode.follower[i]])
+            uncomplete_nodes.append(self.pAll[initialNode.follower[i]].id)
+
+        print uncomplete_nodes
+
+        
+##        print "-"*50
+##        print "Completed_Nodes  ",completed_nodes
+##        print "Uncomplete_Nodes ",uncomplete_nodes
+##        
+##        while len(uncomplete_nodes) <> 0:
+##        
+##        node1 = uncomplete_nodes[0]
+##        changed_node = node_convert(node1,s)
+##        follower_list = s.pAll[changed_node].follower
+##
+##        for i in follower_list:
+##            if i not in completed_nodes:
+##
+##                node_1 = str(node1)
+##                node2 = str(i)
+##                print node_1,"--->",i
+##                uncomplete_nodes.append(i)
+##                g.add_node(id=str(i),radius = 5,stroke = color(1, 0, 0.25, 1),text = color(1))
+##                g.add_edge(node_1,node2,
+##                           length = 50.0,
+##                           stroke = color(1),
+##                           weight = random())
+##
+##        completed_nodes.append(node1)                
+##        del uncomplete_nodes[0]
 
     def __showAttriInfo(self,event):
         """
