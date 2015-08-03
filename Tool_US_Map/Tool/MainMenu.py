@@ -109,32 +109,35 @@ class Network:
         '''
         Preparing data from sting to text format to used it with functions from NLTK
         '''
-        self.datalist=self.dbfdata["text"]
-        self.data_list = []
-        temp = []
-        for i in range(len(self.datalist)):
-            temp.append(self.datalist[i])
-            self.data_list.append(temp)
+        try:
+            
+            self.datalist=self.dbfdata["text"]
+            self.data_list = []
             temp = []
+            for i in range(len(self.datalist)):
+                temp.append(self.datalist[i])
+                self.data_list.append(temp)
+                temp = []
 
-        
-        tw=[]
-        itemp  = len(self.data_list)
-        for i in range(itemp):
-            temp_list = ",".join(self.data_list[i])
-            tw.append(temp_list)
+            
+            tw=[]
+            itemp  = len(self.data_list)
+            for i in range(itemp):
+                temp_list = ",".join(self.data_list[i])
+                tw.append(temp_list)
 
-        wlist = []
-        for item in tw:
-            words = item.split(" ")
-            for word in words:
-                wlist.append(word)
+            wlist = []
+            for item in tw:
+                words = item.split(" ")
+                for word in words:
+                    wlist.append(word)
 
-        
-        text = nltk.Text(wlist)
+            text = nltk.Text(wlist)
+            a = analysisWidget(self.root,text)
 
-        a = analysisWidget(self.root,text)
-
+        except:
+            print "Select file with text column for tweets..."
+            
 
 
     def __openShpfile(self):
@@ -387,6 +390,14 @@ class Settings:
         self.options.grid(row = self.row,column=self.column,sticky=W+S,pady=10)
 
         ##############################################################################################################################
+        #Diffusion Button
+        self.row = self.row + 1
+        self.column = 1
+        self.ExportButton = tk.Button(top,text="Diffusion")
+        self.ExportButton.bind("<ButtonRelease-1>",self.diffuse)
+        self.ExportButton.grid(row=self.row,column=self.column,padx=5,rowspan=2)
+
+        ##############################################################################################################################
         #Export Button
         self.row = self.row + 1
         self.column = 2
@@ -447,7 +458,10 @@ class Settings:
         n4= self.No_Nodes_Scale4.get()
 
         self.nodes = [n1,n2,n3,n4]
-        GenerateNetwork(Network,Communities,self.nodes)
+        self.genNetwork = GenerateNetwork(Network,Communities,self.nodes)
+
+    def diffuse(self,event):
+        self.genNetwork.diffusion()
 
     def changeCommunities(self,event):
         global Communities

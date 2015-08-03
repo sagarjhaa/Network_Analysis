@@ -74,7 +74,7 @@ class MainCanvas(object):
         self.canvasRoot.lower(belowThis = self.root)
         
         if Gcanvas == "":
-            self.mainCanvas = Canvas(self.canvasRoot, bg = 'white', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
+            self.mainCanvas = Canvas(self.canvasRoot, bg = '#eff7ef', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
             Gcanvas = self.mainCanvas
 
             #Scrollbar
@@ -127,7 +127,7 @@ class MainCanvas(object):
             #define an empty xylist for holding converted coordinates
             x = int((point.x-minX)*ratio)+margin_x/2
             y = int((maxY-point.y)*ratio)+margin_y/2
-            _point = self.mainCanvas.create_oval(x-2, y-2, x+2, y+2,outline=point.outline,  
+            _point = self.mainCanvas.create_oval(x-5, y-5, x+5, y+5,outline=point.outline,  
                                fill=point.color, width=2, tags = self.datalist[tag_count])
             self.mainCanvas.tag_bind( _point, '<ButtonPress-1>', self.__showAttriInfo)
             tag_count += 1
@@ -246,7 +246,8 @@ class MainCanvas(object):
                 
                 
                 if area > 0:
-                    color = rd.choice(["#e2baba","#be6565","#deb2b2"])#(["#acdcd1","#86aba3","#607a74"])
+                    #color = rd.choice(["#e2baba","#be6565","#deb2b2"])#(["#acdcd1","#86aba3","#607a74"])
+                    color = "#66b266"
                     _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=color,outline="black",tags = self.datalist[tag_count])#creating our polygon outline
                     
                 else:
@@ -297,7 +298,7 @@ class GenerateNetwork(object):
             print "Please select a shape file!!!"
         else:
             self.drawNode()
-            self.diffusion()
+            #self.diffusion()
 
     def drawNode(self):
 
@@ -325,8 +326,9 @@ class GenerateNetwork(object):
             
             for EI in Graph.Edges():
                 if EI.GetSrcNId() == i.GetId():
-                        if EI.GetSrcNId() <> EI.GetDstNId() :
-                            self.node.follower.append(EI.GetDstNId())
+                    if EI.GetSrcNId() <> EI.GetDstNId() :
+                        self.node.follower.append(EI.GetDstNId())
+                        
             if shape ==0:
                 self.node.shape = "oval"
             if shape ==1:
@@ -345,21 +347,24 @@ class GenerateNetwork(object):
             
             self.CoordinateSelection()
             self.Radius = 5
+##            if len(self.node.follower) <> 0:
+##                self.Radius = len(self.node.follower)
+                
             if self.node.shape == "oval":
                 _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
-                                            self.node.y+self.Radius,outline="#ff00ff",fill="#ff00ff", width=2)
+                                            self.node.y+self.Radius,outline="#ff00ff",fill="white", width=2)
 
             if self.node.shape == "triangle":
                 traingle = [self.node.x,self.node.y,self.node.x+self.Radius,self.node.y+self.Radius]
-                _Oval = Gcanvas.create_oval(traingle,outline="#252568",fill="#252568", width=2)
+                _Oval = Gcanvas.create_oval(traingle,outline="#252568",fill="white", width=2)
 
             if self.node.shape == "rectangle":
                 _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
-                                            self.node.y+self.Radius,outline="#4bcc47",fill="#4bcc47", width=2)
+                                            self.node.y+self.Radius,outline="#474bcc",fill="white", width=2)
 
             if self.node.shape == "circle":
                 _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
-                                            self.node.y+self.Radius,outline="#364949",fill="#364949", width=2)
+                                            self.node.y+self.Radius,outline="#364949",fill="white", width=2)
 
             self.OvalNo[_Oval]=self.node.id#[self.node.x,self.node.y]
             Gcanvas.tag_bind( _Oval, '<ButtonPress-1>', self.__showAttriInfo)
@@ -437,49 +442,40 @@ class GenerateNetwork(object):
 
     def diffusion(self):
 
+##        Print all the nodes with the followers
+##        for i in range(len(self.pAll)):
+##            print self.pAll[i].id, " Follower ",self.pAll[i].follower
+
         completed_nodes = []
         uncomplete_nodes = []
-
-        initialNode  = rd.choice(self.pAll)
-
-##        print "initialNode id: ",initialNode.id
-##        print "Index No: ",self.pAll.index(initialNode)
-
-        completed_nodes.append(initialNode.id)
-        for i in range(len(initialNode.follower)):
-            
-##            print "Follower id: ",self.pAll[initialNode.follower[i]].id
-##            print "Index No: ",self.pAll.index(self.pAll[initialNode.follower[i]])
-            uncomplete_nodes.append(self.pAll[initialNode.follower[i]].id)
-
-        print uncomplete_nodes
-
         
-##        print "-"*50
-##        print "Completed_Nodes  ",completed_nodes
-##        print "Uncomplete_Nodes ",uncomplete_nodes
-##        
-##        while len(uncomplete_nodes) <> 0:
-##        
-##        node1 = uncomplete_nodes[0]
-##        changed_node = node_convert(node1,s)
-##        follower_list = s.pAll[changed_node].follower
-##
-##        for i in follower_list:
-##            if i not in completed_nodes:
-##
-##                node_1 = str(node1)
-##                node2 = str(i)
-##                print node_1,"--->",i
-##                uncomplete_nodes.append(i)
-##                g.add_node(id=str(i),radius = 5,stroke = color(1, 0, 0.25, 1),text = color(1))
-##                g.add_edge(node_1,node2,
-##                           length = 50.0,
-##                           stroke = color(1),
-##                           weight = random())
-##
-##        completed_nodes.append(node1)                
-##        del uncomplete_nodes[0]
+        initialNode  = rd.choice(self.pAll)
+        completed_nodes.append(initialNode.id)
+        uncomplete_nodes = uncomplete_nodes + self.pAll[initialNode.id].follower
+
+        widgetId = self.OvalNo.keys()[self.OvalNo.values().index(initialNode.id)]
+        newwidth = 20
+        Gcanvas.itemconfig(widgetId,width = newwidth)
+
+        print "-"*50
+        print "Completed_Nodes  ",completed_nodes
+        print "Uncomplete_Nodes ",uncomplete_nodes
+        
+        while len(uncomplete_nodes) <> 0:
+
+            #print uncomplete_nodes[0] , " Follower ",self.pAll[uncomplete_nodes[0]].follower
+            uncompleted_follower = self.pAll[uncomplete_nodes[0]].follower
+            for itemp in uncompleted_follower:
+                if itemp not in completed_nodes:
+                    widgetId = self.OvalNo.keys()[self.OvalNo.values().index(itemp)]
+                    newwidth = newwidth -1
+                    Gcanvas.itemconfig(widgetId,width = newwidth)
+                    uncomplete_nodes.append(itemp)
+                    
+            
+            completed_nodes.append(uncomplete_nodes[0])
+            del uncomplete_nodes[0]
+        
 
     def __showAttriInfo(self,event):
         """
