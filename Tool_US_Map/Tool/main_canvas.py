@@ -74,7 +74,7 @@ class MainCanvas(object):
         self.canvasRoot.lower(belowThis = self.root)
         
         if Gcanvas == "":
-            self.mainCanvas = Canvas(self.canvasRoot, bg = '#eff7ef', width = canvasWidth+margin_x, height = canvasHeight+margin_y, scrollregion=('0c','0c',"150c","150c"))
+            self.mainCanvas = Canvas(self.canvasRoot, bg = '#eff7ef', width = int(canvasWidth+margin_x), height = int(canvasHeight+margin_y), scrollregion=('0c','0c',"150c","150c"))
             Gcanvas = self.mainCanvas
 
             #Scrollbar
@@ -444,33 +444,54 @@ class GenerateNetwork(object):
 
 ##        Print all the nodes with the followers
 ##        for i in range(len(self.pAll)):
-##            print self.pAll[i].id, " Follower ",self.pAll[i].follower
+##            print self.pAll[i].id,self.pAll[i].x,self.pAll[i].y #" Follower ",self.pAll[i].follower
 
         completed_nodes = []
         uncomplete_nodes = []
         
         initialNode  = rd.choice(self.pAll)
         completed_nodes.append(initialNode.id)
-        uncomplete_nodes = uncomplete_nodes + self.pAll[initialNode.id].follower
+        #uncomplete_nodes = uncomplete_nodes + self.pAll[initialNode.id].follower
 
         widgetId = self.OvalNo.keys()[self.OvalNo.values().index(initialNode.id)]
         newwidth = 20
-        Gcanvas.itemconfig(widgetId,width = newwidth)
+        Gcanvas.itemconfig(widgetId,outline="orange",width = newwidth)
+        
+        for i in range(len(initialNode.follower)):
+            destNode = self.pAll[initialNode.follower[i]]
 
-        print "-"*50
-        print "Completed_Nodes  ",completed_nodes
-        print "Uncomplete_Nodes ",uncomplete_nodes
+            widgetId = self.OvalNo.keys()[self.OvalNo.values().index(destNode.id)]
+            Gcanvas.itemconfig(widgetId,width = newwidth,outline = "red")
+
+            _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=3)
+
+            uncomplete_nodes.append(initialNode.follower[i])
+            self.itemNo.append(_line)
+            
+            
+
+##        print "-"*50
+##        print "Completed_Nodes  ",completed_nodes
+##        print "Uncomplete_Nodes ",uncomplete_nodes
         
         while len(uncomplete_nodes) <> 0:
 
+            initialNode = self.pAll[uncomplete_nodes[0]]
+            
             #print uncomplete_nodes[0] , " Follower ",self.pAll[uncomplete_nodes[0]].follower
             uncompleted_follower = self.pAll[uncomplete_nodes[0]].follower
             for itemp in uncompleted_follower:
                 if itemp not in completed_nodes:
+
+                    destNode = self.pAll[itemp]
+                    
                     widgetId = self.OvalNo.keys()[self.OvalNo.values().index(itemp)]
                     newwidth = newwidth -1
-                    Gcanvas.itemconfig(widgetId,width = newwidth)
+                    Gcanvas.itemconfig(widgetId,width = newwidth,outline = "black")
                     uncomplete_nodes.append(itemp)
+
+                    _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=1)
+                    self.itemNo.append(_line)
                     
             
             completed_nodes.append(uncomplete_nodes[0])
