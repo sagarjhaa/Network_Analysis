@@ -8,6 +8,7 @@ import random as rd
 import snap
 from PolygonParts import PolygonPart
 from Node import Node
+import time
 
 # display parameters
 canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 950, 100, 100
@@ -248,7 +249,7 @@ class MainCanvas(object):
                 if area > 0:
                     #color = rd.choice(["#e2baba","#be6565","#deb2b2"])#(["#acdcd1","#86aba3","#607a74"])
                     color = "#66b266"
-                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=color,outline="black",tags = self.datalist[tag_count])#creating our polygon outline
+                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=color,outline="white",tags = self.datalist[tag_count])#creating our polygon outline
                     
                 else:
                     # If it is a hole, fill with the same color as the canvas background color 
@@ -448,13 +449,16 @@ class GenerateNetwork(object):
 
         completed_nodes = []
         uncomplete_nodes = []
-        
-        initialNode  = rd.choice(self.pAll)
-        completed_nodes.append(initialNode.id)
-        #uncomplete_nodes = uncomplete_nodes + self.pAll[initialNode.id].follower
+        widgetList = []
 
+        maxFollowers = [len(i.follower) for i in self.pAll]
+##        print maxFollowers
+        
+        initialNode  = self.pAll[maxFollowers.index(max(maxFollowers))]#rd.choice(self.pAll)
+        completed_nodes.append(initialNode.id)
+        
         widgetId = self.OvalNo.keys()[self.OvalNo.values().index(initialNode.id)]
-        newwidth = 20
+        newwidth = 10
         Gcanvas.itemconfig(widgetId,outline="orange",width = newwidth)
         
         for i in range(len(initialNode.follower)):
@@ -462,22 +466,18 @@ class GenerateNetwork(object):
 
             widgetId = self.OvalNo.keys()[self.OvalNo.values().index(destNode.id)]
             Gcanvas.itemconfig(widgetId,width = newwidth,outline = "red")
-
-            _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=3)
+            
+            #_line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=3)
 
             uncomplete_nodes.append(initialNode.follower[i])
-            self.itemNo.append(_line)
+            #self.itemNo.append(_line)
             
             
-
-##        print "-"*50
-##        print "Completed_Nodes  ",completed_nodes
-##        print "Uncomplete_Nodes ",uncomplete_nodes
-        
+        #colors = ["black","grey","yellow","#f6c99a","#efc818","#c3fd53","#66cccc","#883eba","#aed3e1","#dbcbdb"]
         while len(uncomplete_nodes) <> 0:
 
             initialNode = self.pAll[uncomplete_nodes[0]]
-            
+            color = "black"
             #print uncomplete_nodes[0] , " Follower ",self.pAll[uncomplete_nodes[0]].follower
             uncompleted_follower = self.pAll[uncomplete_nodes[0]].follower
             for itemp in uncompleted_follower:
@@ -486,17 +486,16 @@ class GenerateNetwork(object):
                     destNode = self.pAll[itemp]
                     
                     widgetId = self.OvalNo.keys()[self.OvalNo.values().index(itemp)]
-                    newwidth = newwidth -1
-                    Gcanvas.itemconfig(widgetId,width = newwidth,outline = "black")
+                    newwidth = newwidth -0.5
+                    Gcanvas.itemconfig(widgetId,width = newwidth,outline = color)
                     uncomplete_nodes.append(itemp)
 
-                    _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=1)
-                    self.itemNo.append(_line)
+                   # _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=1)
+                   # self.itemNo.append(_line)
                     
             
             completed_nodes.append(uncomplete_nodes[0])
             del uncomplete_nodes[0]
-        
 
     def __showAttriInfo(self,event):
         """
