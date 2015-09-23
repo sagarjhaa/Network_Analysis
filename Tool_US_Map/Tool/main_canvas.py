@@ -51,20 +51,12 @@ class MainCanvas(object):
         self.mainCanvas = canvas
 
         self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
-        GCoordinate = self.CoordinateCollect
-        # self.__createCanvas()
-        
-
-##        for i in range(len(self.CoordinateCollect)):
-##            for j in range(len(self.CoordinateCollect[i].parts)):
-##                print self.CoordinateCollect[i].id,len(self.CoordinateCollect[i].parts),j#self.CoordinateCollect[i].parts[j]
 
     def addLayer(self,shapes,shp_type,attributeName,datalist):
         self.shapes = shapes
         self.shp_type = shp_type
         self.attributeName = attributeName
         self.datalist = datalist
-        
         self.__drawShape(shapes,datalist, self.bbox,shp_type)
 
         
