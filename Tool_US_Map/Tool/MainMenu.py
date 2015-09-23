@@ -1,10 +1,8 @@
 '''
 Created on March 17, 2015
-
 @author: sagar jha
 '''
 
-#from Tkinter import Tk,Menu,Canvas,Scale
 
 from   Tkinter import *
 from   shp_reader import SHP_TYPE_POINT,SHP_TYPE_LINE,SHP_TYPE_POLYGON,Polygon
@@ -32,12 +30,6 @@ class popupWindow(object):
         self.l.pack()
         self.l=Label(top,text="For Simulation choose Yes and to import twitter data choose No")
         self.l.pack()
-
-        self.Choice = StringVar(self.top)
-        self.Choice.set("Yes")
-        self.options = OptionMenu(self.top,self.Choice,"Yes","No")
-        self.options.pack()
-
         self.b=Button(top,text='Ok',command=self.cleanup)
         self.b.pack()
 
@@ -386,7 +378,7 @@ class Settings:
         self.column = self.column + 1
         self.variable = StringVar(top)
         self.variable.set("GenStar")
-        self.options = tk.OptionMenu(top,self.variable,"GenStar","GenRndGnm","GenForestFire")
+        self.options = tk.OptionMenu(top,self.variable,"GenStar","GenRndGnm","GenForestFire","GenFull","GenCircle")
         self.options.grid(row = self.row,column=self.column,sticky=W+S,pady=10)
 
         ##############################################################################################################################

@@ -9,6 +9,7 @@ import snap
 from PolygonParts import PolygonPart
 from Node import Node
 import time
+import numpy as np
 
 # display parameters
 canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 950, 100, 100
@@ -38,7 +39,7 @@ class MainCanvas(object):
                       The attribute data
                       
     """
-    def __init__(self,shapes,bbox,shp_type,root,attributeName,datalist):
+    def __init__(self,shapes,bbox,shp_type,root,attributeName,datalist,canvas):
         self.shapes = shapes
         self.bbox = bbox
         self.shp_type = shp_type
@@ -47,8 +48,11 @@ class MainCanvas(object):
         self.datalist = datalist
         self.OvalNo={}
         self.CoordinateCollect=[]
+        self.mainCanvas = canvas
 
-        self.__createCanvas()
+        self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
+        GCoordinate = self.CoordinateCollect
+        # self.__createCanvas()
         
 
 ##        for i in range(len(self.CoordinateCollect)):
@@ -70,32 +74,32 @@ class MainCanvas(object):
         """
         
         global Gcanvas,GCoordinate
-        self.canvasRoot =self.root# Toplevel()#
-        self.canvasRoot.title(self.attributeName)
-        self.canvasRoot.lower(belowThis = self.root)
-        
-        if Gcanvas == "":
-            self.mainCanvas = Canvas(self.canvasRoot, bg = '#eff7ef', width = int(canvasWidth+margin_x), height = int(canvasHeight+margin_y), scrollregion=('0c','0c',"150c","150c"))
-            Gcanvas = self.mainCanvas
-
-            #Scrollbar
-            hbar=Scrollbar(self.mainCanvas,orient=HORIZONTAL)
-            hbar.pack(side=BOTTOM,fill=X)
-            hbar.config(command=self.mainCanvas.xview)
-            vbar=Scrollbar(self.mainCanvas,orient=VERTICAL)
-            vbar.pack(side=RIGHT,fill=Y)
-            vbar.config(command=self.mainCanvas.yview)
-
-            self.mainCanvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
-            self.mainCanvas.pack(side=LEFT,expand=True,fill=BOTH)
-
-        else:
-            self.mainCanvas = Gcanvas
-            self.mainCanvas.delete(ALL)
-        
-        self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
-        GCoordinate = self.CoordinateCollect
-        self.mainCanvas.pack()
+        # self.canvasRoot =self.root# Toplevel()#
+        # self.canvasRoot.title(self.attributeName)
+        # self.canvasRoot.lower(belowThis = self.root)
+        #
+        # if Gcanvas == "":
+        #     self.mainCanvas = Canvas(self.canvasRoot, bg = '#eff7ef', width = int(canvasWidth+margin_x), height = int(canvasHeight+margin_y), scrollregion=('0c','0c',"150c","150c"))
+        #     Gcanvas = self.mainCanvas
+        #
+        #     #Scrollbar
+        #     hbar=Scrollbar(self.mainCanvas,orient=HORIZONTAL)
+        #     hbar.pack(side=BOTTOM,fill=X)
+        #     hbar.config(command=self.mainCanvas.xview)
+        #     vbar=Scrollbar(self.mainCanvas,orient=VERTICAL)
+        #     vbar.pack(side=RIGHT,fill=Y)
+        #     vbar.config(command=self.mainCanvas.yview)
+        #
+        #     self.mainCanvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
+        #     self.mainCanvas.pack(side=LEFT,expand=True,fill=BOTH)
+        #
+        # else:
+        #     self.mainCanvas = Gcanvas
+        #     self.mainCanvas.delete(ALL)
+        #
+        # self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
+        # GCoordinate = self.CoordinateCollect
+        # self.mainCanvas.pack()
         
     def __drawShape(self,shapes,datalist,bbox,shp_type):
         """ 
@@ -310,12 +314,20 @@ class GenerateNetwork(object):
             Graph = snap.GenStar(snap.PNGraph, self.nPoints, True)
 
         if self.Network == "GenRndGnm":
-            print "GenRndGnm is the netowork with points ",self.nPoints
+            print "GenRndGnm is the network with points ",self.nPoints
             Graph = snap.GenRndGnm(snap.PNGraph,self.nPoints, self.nPoints)
 
         if self.Network == "GenForestFire":
-            print "GenForestFire is the netowork with points ",self.nPoints
+            print "GenForestFire is the network with points ",self.nPoints
             Graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
+
+        if self.Network == "GenFull":
+            print "GenFull is the network with points ",self.nPoints
+            Graph = snap.GenFull(snap.PNGraph,self.nPoints)
+
+        if self.Network == "GenCircle":
+            print "GenCircle is the network with points ",self.nPoints
+            Graph = snap.GenCircle(snap.PNGraph,self.nPoints,10,10)
 
         shape = 0
         self.dnodes.reverse()
@@ -442,6 +454,29 @@ class GenerateNetwork(object):
         return inside
 
     def diffusion(self):
+
+        '''
+        Writing process for matrix creation
+        '''
+        totalNodes = len(self.pAll)
+        matrix = [[0]*totalNodes for i in range(totalNodes)]
+
+        for i in range(totalNodes):
+            for j in self.pAll[i].follower:
+                #print i,"--->",j
+                matrix[i][j]=1
+
+        x = np.matrix(matrix)
+        y = np.matrix(matrix)
+
+        print "*" * 50
+        result = x * y
+        
+        for i in range(5):
+            print "*" * 50
+            print result
+            result = result * x
+            
 
 ##        Print all the nodes with the followers
 ##        for i in range(len(self.pAll)):
