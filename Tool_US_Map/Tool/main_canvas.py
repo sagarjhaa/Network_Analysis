@@ -2,6 +2,7 @@
 the canvas to draw the shapefile and interaction with mouse clicks
 """
 from Tkinter import *
+# from constants import *
 from shp_reader import SHP_TYPE_POINT,SHP_TYPE_LINE,SHP_TYPE_POLYGON,Polygon
 
 import random as rd
@@ -12,7 +13,7 @@ import time
 import numpy as np
 
 # display parameters
-canvasWidth, canvasHeight,margin_x, margin_y  = 1800, 950, 100, 100
+# canvasWidth, canvasHeight,margin_x, margin_y  = WIDTH, HEIGHT,100,100
 
 Gcanvas = ""
 GCoordinate = ""
@@ -37,9 +38,11 @@ class MainCanvas(object):
                       The attribute name
     datalist         : array
                       The attribute data
-                      
+
     """
-    def __init__(self,shapes,bbox,shp_type,root,attributeName,datalist,canvas):
+    def __init__(self,shapes,bbox,shp_type,root,attributeName,datalist,canvas,canvasConfig):
+
+        global canvasWidth,canvasHeight, margin_x, margin_y
         self.shapes = shapes
         self.bbox = bbox
         self.shp_type = shp_type
@@ -50,6 +53,7 @@ class MainCanvas(object):
         self.CoordinateCollect=[]
         self.mainCanvas = canvas
 
+        canvasWidth,canvasHeight,margin_x,margin_y = canvasConfig[0],canvasConfig[1],canvasConfig[2],canvasConfig[3],
         self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
 
     def addLayer(self,shapes,shp_type,attributeName,datalist):
@@ -59,42 +63,9 @@ class MainCanvas(object):
         self.datalist = datalist
         self.__drawShape(shapes,datalist, self.bbox,shp_type)
 
-        
-    def __createCanvas(self):
-        """
-        Create the canvas and draw all the spatial objects
-        """
-        
-        global Gcanvas,GCoordinate
-        # self.canvasRoot =self.root# Toplevel()#
-        # self.canvasRoot.title(self.attributeName)
-        # self.canvasRoot.lower(belowThis = self.root)
-        #
-        # if Gcanvas == "":
-        #     self.mainCanvas = Canvas(self.canvasRoot, bg = '#eff7ef', width = int(canvasWidth+margin_x), height = int(canvasHeight+margin_y), scrollregion=('0c','0c',"150c","150c"))
-        #     Gcanvas = self.mainCanvas
-        #
-        #     #Scrollbar
-        #     hbar=Scrollbar(self.mainCanvas,orient=HORIZONTAL)
-        #     hbar.pack(side=BOTTOM,fill=X)
-        #     hbar.config(command=self.mainCanvas.xview)
-        #     vbar=Scrollbar(self.mainCanvas,orient=VERTICAL)
-        #     vbar.pack(side=RIGHT,fill=Y)
-        #     vbar.config(command=self.mainCanvas.yview)
-        #
-        #     self.mainCanvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
-        #     self.mainCanvas.pack(side=LEFT,expand=True,fill=BOTH)
-        #
-        # else:
-        #     self.mainCanvas = Gcanvas
-        #     self.mainCanvas.delete(ALL)
-        #
-        # self.__drawShape(self.shapes,self.datalist,self.bbox,self.shp_type)
-        # GCoordinate = self.CoordinateCollect
-        # self.mainCanvas.pack()
-        
+
     def __drawShape(self,shapes,datalist,bbox,shp_type):
-        """ 
+        """
         Draw all the spatial objects on the canvas
         """
 
@@ -106,14 +77,14 @@ class MainCanvas(object):
         ratio = ratiox
         if ratio>ratioy:
             ratio = ratioy
-        
+
         if shp_type == SHP_TYPE_POINT:
             self.__drawPoints(minX, minY, maxX, maxY, ratio)
         elif shp_type == SHP_TYPE_LINE:
             self.__drawPolylines(minX, minY, maxX, maxY, ratio)
         elif shp_type == SHP_TYPE_POLYGON:
             self.__drawPolygons(minX, minY, maxX, maxY, ratio)
-      
+
     def __drawPoints(self,minX, minY, maxX, maxY,ratio):
         """
         Draw points on the canvas
@@ -124,15 +95,15 @@ class MainCanvas(object):
             #define an empty xylist for holding converted coordinates
             x = int((point.x-minX)*ratio)+margin_x/2
             y = int((maxY-point.y)*ratio)+margin_y/2
-            _point = self.mainCanvas.create_oval(x-5, y-5, x+5, y+5,outline=point.outline,  
+            _point = self.mainCanvas.create_oval(x, y, x+5, y+5,outline=point.outline,
                                fill=point.color, width=2, tags = self.datalist[tag_count])
             self.mainCanvas.tag_bind( _point, '<ButtonPress-1>', self.__showAttriInfo)
             tag_count += 1
-        
+
     def __drawPolylines(self,minX, minY, maxX, maxY,ratio):
         """
         Draw polylines on the canvas
-        """     
+        """
         tag_count = 0
         # loop through each polyline
         for polyline in self.shapes:
@@ -159,9 +130,9 @@ class MainCanvas(object):
                     tempXYlist.append(xylist[m*2+1])
                 # create the line
                 _line = self.mainCanvas.create_line(tempXYlist,fill=polyline.color, tags = self.datalist[tag_count])
-                self.mainCanvas.tag_bind( _line, '<ButtonPress-1>', self.__showAttriInfo)            
+                self.mainCanvas.tag_bind( _line, '<ButtonPress-1>', self.__showAttriInfo)
             tag_count += 1
-  
+
     def __drawPolygons(self,minX, minY, maxX, maxY,ratio):
         """
         Draw polygons on the canvas
@@ -174,92 +145,90 @@ class MainCanvas(object):
 
             self.PolyInfo = PolygonPart(itemId)
             itemId = itemId + 1
-            
+
             # loops through each point and calculate the window coordinates, put in xylist
             for point in polygon.points:
                 pointx = int((point.x -minX)*ratio) + +margin_x/2
                 pointy = int((maxY- point.y)*ratio) + +margin_y/2
-                
+
                 xylist.append(pointx)
                 xylist.append(pointy)
-    
+
             """
             polyline.partsIndex is a tuple data type holding the starting points for each
             part. For example, if the polyline.partsIndex of a polyline equals to (0, 4, 9),
             and the total points, which is calcuate by len(polyline.points) equals to 13.
             This means that the polyline has three parts, and the each part would have the points
             as follows.
-            
+
             part 1: p0,p1,p2,p3
             part 2: p4,p5,p6,p7,p8
             part 3: p9,p10,p11,p12
-            
+
             The xylist would be:
             xylist = [x0, y0, x1, y1, x2, y2, x3, y3, x4, y4....x12, y12]
-            where 
+            where
             xylist[0] = x0
             xylist[1] = y0
             xylist[2] = x1
             xylist[3] = y1
             .....
-            
+
             To draw the first part of polyline, we want to get tempXYlist as
-        
+
             tempXYlist = [x0, y0, x1, y1, x2, y2, x3, y3]
-            
+
             At this time, m is in range(0,4)
-            
+
             xylist[m*2] would be is x0(when m=0), x1(when m=1), x2(when m=2), x3(when m=3)
-        
+
             xylist[m*2+1] would be is y0(when m=0), y1(when m=1), y2(when m=2), y3(when m=3)
             """
-            
+
             for k in range(polygon.partsNum):
-                
+
                 #get the end sequence number of points in the part
                 if (k==polygon.partsNum-1):
                     endPointIndex = len(polygon.points)
                 else:
                     endPointIndex = polygon.partsIndex[k+1]
-         
+
                 #Define a temporary list for holding the part coordinates
                 tempXYlist = []
                 tempXlist  = []
                 tempYlist  = []
                 #take out points' coordinates for the part and add to the temporary list
-                for m in range(polygon.partsIndex[k], endPointIndex):            
+                for m in range(polygon.partsIndex[k], endPointIndex):
                     tempXYlist.append(xylist[m*2])
                     tempXYlist.append(xylist[m*2+1])
                     tempXlist.append(xylist[m*2])
                     tempYlist.append(xylist[m*2+1])
 
                 self.PolyInfo.parts[k]=tempXYlist
-                
-                
-                startIndex = polygon.partsIndex[k] #start index for our positive polygon.                
+
+
+                startIndex = polygon.partsIndex[k] #start index for our positive polygon.
                 tempPoints = polygon.points[startIndex: endPointIndex]#we get our temppoints to help use create our polygon using positive data
                 newPolygon = Polygon(tempPoints) #here we create our polygons using positve data
                 area = newPolygon.getArea() # Calculate the area
-                
-                
+
+
                 if area > 0:
-                    #color = rd.choice(["#e2baba","#be6565","#deb2b2"])#(["#acdcd1","#86aba3","#607a74"])
-                    color = "#66b266"
-                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=color,outline="white",tags = self.datalist[tag_count])#creating our polygon outline
-                    
+                    _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=polygon.color,outline="white",tags = self.datalist[tag_count])#creating our polygon outline
+
                 else:
-                    # If it is a hole, fill with the same color as the canvas background color 
-                    _polygon = self.mainCanvas.create_polygon(tempXYlist,fill="white",outline="white", tags = self.datalist[tag_count])
+                    # If it is a hole, fill with the same color as the canvas background color
+                    _polygon = self.mainCanvas.create_polygon(tempXYlist,fill="black",outline="red", tags = self.datalist[tag_count])
                 self.mainCanvas.tag_bind( _polygon, '<ButtonPress-1>', self.__showAttriInfo)
             self.CoordinateCollect.append(self.PolyInfo)
             tag_count += 1
-            
+
     def __showAttriInfo(self,event):
         """
         Show attribute information of clicked unit
-        """        
+        """
         widget_id=event.widget.find_closest(event.x, event.y)
-        
+
         if widget_id[0] in self.OvalNo.keys():
             print widget_id[0], self.OvalNo[widget_id[0]][0],self.OvalNo[widget_id[0]][1]
         else:
@@ -282,7 +251,7 @@ class GenerateNetwork(object):
         self.LineNo = []
         self.itemNo = []
         self.pAll = []
-        
+
         for i in range(self.Communities):
             self.nPoints = self.nPoints + self.nodes[i]
 
@@ -324,16 +293,16 @@ class GenerateNetwork(object):
         shape = 0
         self.dnodes.reverse()
         nodeCounter = self.dnodes.pop()
-        
+
         for i in Graph.Nodes():
             self.node = Node()
             self.node.id = i.GetId()
-            
+
             for EI in Graph.Edges():
                 if EI.GetSrcNId() == i.GetId():
                     if EI.GetSrcNId() <> EI.GetDstNId() :
                         self.node.follower.append(EI.GetDstNId())
-                        
+
             if shape ==0:
                 self.node.shape = "oval"
             if shape ==1:
@@ -349,12 +318,12 @@ class GenerateNetwork(object):
                     nodeCounter = self.dnodes.pop()
                     print "Completed Community: ",shape
                 shape = shape + 1
-            
+
             self.CoordinateSelection()
             self.Radius = 5
 ##            if len(self.node.follower) <> 0:
 ##                self.Radius = len(self.node.follower)
-                
+
             if self.node.shape == "oval":
                 _Oval = Gcanvas.create_oval(self.node.x,self.node.y,self.node.x+self.Radius,
                                             self.node.y+self.Radius,outline="#ff00ff",fill="white", width=2)
@@ -376,9 +345,9 @@ class GenerateNetwork(object):
             self.itemNo.append(_Oval)
             self.pAll.append(self.node)
 
-            
+
         GNodesItemNo = self.itemNo
-            
+
     def CoordinateSelection(self):
         PolyPart = rd.randrange(len(GCoordinate))
         #print len(GCoordinate[PolyPart].parts)
@@ -390,11 +359,11 @@ class GenerateNetwork(object):
         tempXlist = []
         tempYlist = []
 
-                        
+
         for i in range(0,len(tempXYlist),2):
             tempXlist.append(tempXYlist[i])
             tempYlist.append(tempXYlist[i+1])
-        
+
         xMax = max(tempXlist)
         xMin = min(tempXlist)
 
@@ -417,12 +386,12 @@ class GenerateNetwork(object):
             if i >25:
 ##                print xMin,xMax,yMin,yMax
                 break
-            
+
         self.node.x = xPoint
         self.node.y = yPoint
 
     def point_inside_polygon(self,x,y,poly):
-        
+
         n = len(poly)/2
         inside =False
 
@@ -463,12 +432,12 @@ class GenerateNetwork(object):
 
         print "*" * 50
         result = x * y
-        
+
         for i in range(5):
             print "*" * 50
             print result
             result = result * x
-            
+
 
 ##        Print all the nodes with the followers
 ##        for i in range(len(self.pAll)):
@@ -480,26 +449,26 @@ class GenerateNetwork(object):
 
         maxFollowers = [len(i.follower) for i in self.pAll]
 ##        print maxFollowers
-        
+
         initialNode  = self.pAll[maxFollowers.index(max(maxFollowers))]#rd.choice(self.pAll)
         completed_nodes.append(initialNode.id)
-        
+
         widgetId = self.OvalNo.keys()[self.OvalNo.values().index(initialNode.id)]
         newwidth = 10
         Gcanvas.itemconfig(widgetId,outline="orange",width = newwidth)
-        
+
         for i in range(len(initialNode.follower)):
             destNode = self.pAll[initialNode.follower[i]]
 
             widgetId = self.OvalNo.keys()[self.OvalNo.values().index(destNode.id)]
             Gcanvas.itemconfig(widgetId,width = newwidth,outline = "red")
-            
+
             #_line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=3)
 
             uncomplete_nodes.append(initialNode.follower[i])
             #self.itemNo.append(_line)
-            
-            
+
+
         #colors = ["black","grey","yellow","#f6c99a","#efc818","#c3fd53","#66cccc","#883eba","#aed3e1","#dbcbdb"]
         while len(uncomplete_nodes) <> 0:
 
@@ -511,7 +480,7 @@ class GenerateNetwork(object):
                 if itemp not in completed_nodes:
 
                     destNode = self.pAll[itemp]
-                    
+
                     widgetId = self.OvalNo.keys()[self.OvalNo.values().index(itemp)]
                     newwidth = newwidth -0.5
                     Gcanvas.itemconfig(widgetId,width = newwidth,outline = color)
@@ -519,15 +488,15 @@ class GenerateNetwork(object):
 
                    # _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=1)
                    # self.itemNo.append(_line)
-                    
-            
+
+
             completed_nodes.append(uncomplete_nodes[0])
             del uncomplete_nodes[0]
 
     def __showAttriInfo(self,event):
         """
         Show attribute information of clicked unit
-        """        
+        """
         widget_id=event.widget.find_closest(event.x, event.y)
 
         try:
@@ -547,22 +516,22 @@ class GenerateNetwork(object):
                     widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
                     Gcanvas.itemconfig(widgetId,state="hidden")
                 self.Hidden = True
-                
+
             for i in range(len(self.pAll)):
-                
+
                 if self.pAll[i].id == NodeId:
                     #print "NodeId: ",NodeId," ---->",self.pAll[i].follower
                     Node1 = self.pAll[i]
 
                     widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[i].id)]
                     Gcanvas.itemconfig(widgetId,state="normal")
-                    
+
                     for j in self.pAll[i].follower:
                         Node2 = self.pAll[j]
-                        
+
                         widgetId = self.OvalNo.keys()[self.OvalNo.values().index(self.pAll[j].id)]
                         Gcanvas.itemconfig(widgetId,state="normal")
-                        
+
                         _line=Gcanvas.create_line(Node1.x+5,Node1.y+5,Node2.x+5,Node2.y+5,arrow="last",fill="black",width=3)
                         self.itemNo.append(_line)
                         self.LineNo.append(_line)

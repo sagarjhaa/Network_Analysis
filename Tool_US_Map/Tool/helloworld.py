@@ -5,19 +5,13 @@ except:
     #import Tkinter as tk  # for python 2
     from Tkinter import *
     import ttk as ttk
-    import ctypes
+    from  constants import *
     import tkMessageBox
     import tkFileDialog
     import Tkconstants
     import shp_reader
     import dbfload as dbf
     from   main_canvas import MainCanvas,GenerateNetwork
-
-user32 = ctypes.windll.user32
-WIDTH,HEIGHT = user32.GetSystemMetrics(0),user32.GetSystemMetrics(1)
-WIDTH -= 20
-HEIGHT -= 75
-BACKGROUND = "grey"
 
 #CONSTANTS FOR GLOBAL USE
 ROOT = None
@@ -58,11 +52,11 @@ class Application:
         self.fr_second.grid(row=0,column=1,sticky="nsew")
 
         #defind the controls for the fr_first
-        self.btn_Simulator = Button(self.fr_first,text="Simulator",command=self.__showControls,width=20)
-        self.btn_Simulator.grid(row=0,column=0,pady=10,sticky=(W,E),padx=5)
-
         self.btn_Analysis = Button(self.fr_first,text="Analysis",width=20)
-        self.btn_Analysis.grid(row=0,column=1,pady=10,sticky=(W,E),padx=5)
+        self.btn_Analysis.grid(row=0,column=0,pady=10,sticky=(W,E),padx=5)
+
+        self.btn_Simulator = Button(self.fr_first,text="Simulator",command=self.__showControls,width=20)
+        self.btn_Simulator.grid(row=0,column=1,pady=10,sticky=(W,E),padx=5)
 
         self.fr_first.grid_columnconfigure(0,weight=2)
         self.fr_first.grid_columnconfigure(1,weight=2)
@@ -89,9 +83,7 @@ class Application:
 
         self.text = Text(f1)
         self.canvas = Canvas(self.f2)
-        self.canvas.configure(background="black")
-
-        
+        self.canvas.configure(background="grey")
 
         self.text.pack(expand=1,fill=BOTH,)
         self.canvas.pack(expand=1,fill=BOTH)
@@ -115,6 +107,11 @@ class Simulator(Application):
         self.canvas = canvas
         self.text = text
 
+        self.x = 10
+        self.y = 10
+        self.radius = 30
+        self.layers = []
+
         self.fr_Simulator = Frame(self.fr_first,background=BACKGROUND)
         self.fr_Simulator.grid(row=1,column=0,columnspan=2,sticky=(W),padx=5,pady=20)
 
@@ -126,23 +123,82 @@ class Simulator(Application):
 
         self.var = IntVar()
         self.c = Checkbutton(self.fr_Simulator, text="Add Layer", variable=self.var,background=BACKGROUND)
-        self.c.grid(row=3,column=0,sticky=(W),pady = 20)
+        self.c.grid(row=3,column=0,sticky=(W),pady = 10)
 
         self.lb_FileName = Label(self.fr_Simulator,text="No input file!!",anchor=W,background=BACKGROUND)
         self.lb_FileName.grid(row=0,column = 1,sticky=(E),padx=20,ipadx=40)
 
         self.btn_Draw = Button(self.fr_Simulator,text="Visulize",command = self.__UpdateCanvas)
-        self.btn_Draw.grid(row=3,column=1,sticky=(E,W),pady = 20,padx = 20,ipadx=40)
+        self.btn_Draw.grid(row=3,column=1,sticky=(E,W),pady = 10,padx = 20,ipadx=40)
         self.btn_Draw.configure(width=7)
+
+        self.fr_Move = Frame(self.fr_Simulator)
+        self.fr_Move.grid(row=4,column=0,columnspan=4,sticky=(W),padx=5,pady=20)
+
+        self.btn_ZoomIn = Button(self.fr_Move,text="Zoom In",command = self.zoomIn)
+        self.btn_ZoomIn.grid(row=4,column=0,columnspan=2,sticky=(W,E),padx=10)
+
+        self.btn_ZoomOut = Button(self.fr_Move,text="Zoom Out",command = self.zoomOut)
+        self.btn_ZoomOut.grid(row=4,column=2,columnspan=2,sticky=(W,E),padx=10)
+
+        self.btn_moveRight = Button(self.fr_Move,text="Left",command = self.moveRight)
+        self.btn_moveRight.grid(row=5,column=0,sticky=(W),pady=10,padx=10)
+        self.btn_moveRight.configure(width=5)
+
+        self.btn_moveLeft = Button(self.fr_Move,text="Right",command = self.moveLeft)
+        self.btn_moveLeft.grid(row=5,column=1,sticky=(W),pady=10,padx=10)
+        self.btn_moveLeft.configure(width=5)
+
+        self.btn_moveUp = Button(self.fr_Move,text="Up",command = self.moveUp)
+        self.btn_moveUp.grid(row=5,column=2,sticky=(E),pady=10,padx=10)
+        self.btn_moveUp.configure(width=5)
+
+        self.btn_moveDown = Button(self.fr_Move,text="Down",command = self.moveDown)
+        self.btn_moveDown.grid(row=5,column=3,sticky=(E),pady=10,padx=10)
+        self.btn_moveDown.configure(width=5)
+
         # writeCalculations(self.text,self.__openShpfile.__doc__,True)
 
+    def moveRight(self):
+        self.canvas.delete(ALL)
+        global margin_x
+        margin_x = margin_x - 100
+        self.__reDraw()
 
+    def moveLeft(self):
+        self.canvas.delete(ALL)
+        global margin_x
+        margin_x = margin_x + 100
+        self.__reDraw()
+
+    def moveUp(self):
+        self.canvas.delete(ALL)
+        global margin_y
+        margin_y = margin_y - 100
+        self.__reDraw()
+
+    def moveDown(self):
+        self.canvas.delete(ALL)
+        global margin_y
+        margin_y = margin_y + 100
+        self.__reDraw()
+
+    def zoomOut(self):
+        self.canvas.delete(ALL)
+        global canvasWidth
+        canvasWidth = canvasWidth - 100
+        self.__reDraw()
+
+    def zoomIn(self):
+        self.canvas.delete(ALL)
+        global canvasWidth
+        canvasWidth =canvasWidth +  100
+        self.__reDraw()
 
     def __openShpfile(self):
         """Open a shapefile and read in the contents, pop up the attribute menu with the attributes of the shapefile"""
         print "open shape file!"
         directory=tkFileDialog.askopenfilename(filetypes=[("SHAPE_FILE","*.shp")])
-        #print directory
 
         self.lb_FileName.config(text= directory.split("/")[-1])
         writeCalculations(self.text,"Completed reading file: " + directory.split("/")[-1],False)
@@ -173,20 +229,43 @@ class Simulator(Application):
     def __UpdateCanvas(self):
         '''This function draw the data on the canvas '''
 
-        self.attributeSelected =  self.variable.get()
-        self.datalist = self.dbfdata[self.attributeSelected]
+        try:
+            self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
 
-        if self.var.get():
-            self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
-        else:
-            self.canvas.delete(ALL)
-            self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas)
+            self.attributeSelected =  self.variable.get()
+            self.datalist = self.dbfdata[self.attributeSelected]
+
+            if self.var.get():
+                self.layers.append([self.shapes,self.shp_type,self.attributeSelected,self.datalist])
+                self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
+            else:
+                self.canvas.delete(ALL)
+                self.layers = []
+                self.layers.append([1,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas])
+                self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
+
+        except:
+            writeCalculations(self.text,"Please Select the file and then Visualise" ,True)
 
 
+    def __reDraw(self):
+        try:
 
+            self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
+            print self.canvasConfig
+            for i in range(len(self.layers)):
+                if self.layers[i][0]==1:
+                    temp,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas = self.layers[i]
+                    self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
+
+            for i in range(len(self.layers)):
+                if self.layers[i][0]<>1:
+                    self.shapes,self.shp_type,self.attributeSelected,self.datalist = self.layers[i]
+                    self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
+
+        except:
+            writeCalculations(self.text,"Please Select the file and then Visualise" ,True)
 
 
 if __name__ == '__main__':
     Application()
-
-

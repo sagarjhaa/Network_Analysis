@@ -24,8 +24,8 @@ class Point:
     def __init__(self, x = 0.0, y = 0.0):
         self.x = x
         self.y = y
-        self.color = 'red'
-        self.outline = "black"
+        self.color = 'white'
+        self.outline = "white"
         
 class Polyline:
     """
@@ -63,7 +63,7 @@ class Polygon:
     def __init__(self, points= [], partsNum = 0):
         self.points = points
         self.partsNum = partsNum
-        self.color = 'black'
+        self.color = '#008141'
 
     def getCentroid(self):
         """
